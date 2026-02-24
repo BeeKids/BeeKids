@@ -10,6 +10,7 @@ admin.site.register(Grupo)
 admin.site.register(Actividad)
 
 
+
 admin.site.register(ReporteGrupo)
 admin.site.register(ReporteGlobal)
 admin.site.register(RegistroCalificaciones)

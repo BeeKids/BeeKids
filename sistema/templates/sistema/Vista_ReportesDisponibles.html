@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generar Reportes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            background: #f3f3f3;
+        }
+        button {
+            background-color: #007BFF;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #message {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 16px;
+            color: green;
+        }
+
+        input[type="text"] {
+        width: 100%;
+        padding: 10px;
+        margin-top: 5px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        background: #f3f3f3;
+        transition: all 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+        border-color: #007BFF;
+        background: #fff;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        outline: none;
+    }
+
+    #grupoContainer {
+        margin-top: 20px;
+    }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Generar Reportes</h1>
+        <form id="reporteForm">
+            <div class="form-group">
+                <label for="tipo_reporte">Selecciona el tipo de reporte:</label>
+                <select id="tipo_reporte" required>
+                    <option value="" disabled selected>Elige un tipo de reporte</option>
+                    <option class="grupal" value="calificaciones_grupal_histograma">Histograma de calificaciones grupal</option>
+                    <option class="global" value="calificaciones_global_histograma">Histograma de calificaciones global</option>
+                    <option class="grupal" value="faltas_grupal_pastel">Diagrama de pastel de faltas grupal</option>
+                    <option class="global" value="faltas_global_pastel">Diagrama de pastel de faltas global</option>
+                </select>
+            </div>
+            <div class="form-group" id="grupoContainer" style="display: none;">
+                <label for="nombre_grupo">Nombre del grupo:</label>
+                <input type="text" id="nombre_grupo" placeholder="Ingresa el nombre del grupo" />
+            </div>
+            
+            <button type="submit">Generar Reporte</button>
+        </form>
+        <div id="message"></div>
+    </div>
+
+    <script>
+        document.getElementById("tipo_reporte").addEventListener('change', function() {
+            const tipoReporte = this.selectedOptions[0].classList[0];
+            const grupoContainer = document.getElementById("grupoContainer");
+    
+            // Mostrar o esconder el campo del grupo según la opción seleccionada
+            if (tipoReporte === "grupal") {
+                grupoContainer.style.display = "block";
+            } else {
+                grupoContainer.style.display = "none";
+            }
+        });
+    
+        document.getElementById('reporteForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+    
+            const tipoReporte = document.getElementById('tipo_reporte').selectedOptions[0];
+            const nombreGrupo = document.getElementById('nombre_grupo').value.trim();
+            const messageElement = document.getElementById('message');
+    
+            // Validar que se haya seleccionado un tipo de reporte
+            if (!tipoReporte.value) {
+                alert("Por favor, selecciona un tipo de reporte.");
+                return;
+            }
+    
+            // Validar que se haya ingresado un nombre de grupo si la opción es grupal
+            if (tipoReporte.classList.contains("grupal") && !nombreGrupo) {
+                alert("Por favor, ingresa el nombre del grupo.");
+                return;
+            }
+    
+            messageElement.textContent = "Generando reporte...";
+    
+            // Generar la URL
+            let url = "";
+            if (tipoReporte.value === "calificaciones_grupal_histograma") {
+                url = `http://127.0.0.1:8000/reportes/generarHistograma/calificaciones/grupo:${encodeURIComponent(nombreGrupo)}`;
+            } else if (tipoReporte.value === "calificaciones_global_histograma") {
+                url = "http://127.0.0.1:8000/reportes/generarHistograma/calificaciones/global";
+            } else if (tipoReporte.value === "faltas_grupal_pastel") {
+                url = `http://127.0.0.1:8000/reportes/generarDiagramaPastel/faltas/grupo:${encodeURIComponent(nombreGrupo)}`;
+            } else if (tipoReporte.value === "faltas_global_pastel") {
+                url = "http://127.0.0.1:8000/reportes/generarDiagramaPastel/faltas/global";
+            }
+    
+            // Navegar a la URL para generar el reporte
+            window.location.href = url;
+        });
+    </script>
+    
+</body>
+</html>

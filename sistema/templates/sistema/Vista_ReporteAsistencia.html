@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Reporte de Asistencia</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .content {
+            margin-top: 20px;
+        }
+        .chart {
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Reporte de Asistencia {{ titulo }}</h1>
+    </div>
+
+    <div class="content">
+        <div class="chart">
+            <img src="{{ imagenAsistenciaPNG }}" alt="Gráfico de Asistencia">
+        </div>
+    </div>
+
+</body>
+</html>

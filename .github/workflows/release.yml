@@ -13,11 +13,8 @@ jobs:
       - name: Checkout código
         uses: actions/checkout@v3
 
-      - name: Obtener versión desde archivo VERSION
-        id: version
-        run: |
-          VERSION=$(cat VERSION)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+      - name: Generar versión automática
+        run: echo "VERSION=v1.0.${{ github.run_number }}" >> $GITHUB_ENV
 
       - name: Crear Tag
         run: |

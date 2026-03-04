@@ -1,5 +1,8 @@
 name: Auto Release
 
+permissions:
+  contents: write
+
 on:
   push:
     branches:
@@ -12,12 +15,57 @@ jobs:
     steps:
       - name: Checkout código
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Obtener versión desde archivo VERSION
+      - name: Obtener última versión
         id: version
         run: |
-          VERSION=$(cat VERSION)
-          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          TAG=$(git tag --sort=-v:refname | head -n 1)
+          if [ -z "$TAG" ]; then
+            TAG="0.0.0.0"
+          fi
+          echo "CURRENT=$TAG" >> $GITHUB_ENV
+
+      - name: Determinar tipo de cambio
+        id: change
+        run: |
+          TITLE="${{ github.event.head_commit.message }}"
+
+          if [[ "$TITLE" == *"[major]"* ]]; then
+            echo "TYPE=major" >> $GITHUB_ENV
+          elif [[ "$TITLE" == *"[minor]"* ]]; then
+            echo "TYPE=minor" >> $GITHUB_ENV
+          elif [[ "$TITLE" == *"[patch]"* ]]; then
+            echo "TYPE=patch" >> $GITHUB_ENV
+          else
+            echo "TYPE=maint" >> $GITHUB_ENV
+          fi
+
+      - name: Calcular nueva versión
+        run: |
+          VERSION=$CURRENT
+          IFS='.' read -r MAJOR MINOR PATCH MAINT <<< "$VERSION"
+
+          if [ "$TYPE" == "major" ]; then
+            MAJOR=$((MAJOR+1))
+            MINOR=0
+            PATCH=0
+            MAINT=0
+          elif [ "$TYPE" == "minor" ]; then
+            MINOR=$((MINOR+1))
+            PATCH=0
+            MAINT=0
+          elif [ "$TYPE" == "patch" ]; then
+            PATCH=$((PATCH+1))
+            MAINT=0
+          else
+            MAINT=$((MAINT+1))
+          fi
+
+          NEW_VERSION="$MAJOR.$MINOR.$PATCH.$MAINT"
+
+          echo "VERSION=$NEW_VERSION" >> $GITHUB_ENV
 
       - name: Crear Tag
         run: |
@@ -26,7 +74,7 @@ jobs:
           git tag $VERSION
           git push origin $VERSION
 
-      - name: Crear Release en GitHub
+      - name: Crear Release
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.VERSION }}

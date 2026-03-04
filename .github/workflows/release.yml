@@ -22,21 +22,23 @@ jobs:
         id: version
         run: |
           TAG=$(git tag --sort=-v:refname | head -n 1)
+
           if [ -z "$TAG" ]; then
             TAG="0.0.0.0"
           fi
+
           echo "CURRENT=$TAG" >> $GITHUB_ENV
 
-      - name: Determinar tipo de cambio
+      - name: Determinar tipo de cambio desde commit
         id: change
         run: |
-          TITLE="${{ github.event.head_commit.message }}"
+          MESSAGE="${{ github.event.head_commit.message }}"
 
-          if [[ "$TITLE" == *"[major]"* ]]; then
-            echo "TYPE=major" >> $GITHUB_ENV
-          elif [[ "$TITLE" == *"[minor]"* ]]; then
+          TYPE=$(echo "$MESSAGE" | sed -E 's/.* ([a-z]+)\(.*/\1/')
+
+          if [ "$TYPE" == "feat" ]; then
             echo "TYPE=minor" >> $GITHUB_ENV
-          elif [[ "$TITLE" == *"[patch]"* ]]; then
+          elif [ "$TYPE" == "fix" ] || [ "$TYPE" == "perf" ] || [ "$TYPE" == "refactor" ]; then
             echo "TYPE=patch" >> $GITHUB_ENV
           else
             echo "TYPE=maint" >> $GITHUB_ENV
@@ -74,7 +76,7 @@ jobs:
           git tag $VERSION
           git push origin $VERSION
 
-      - name: Crear Release
+      - name: Crear Release en GitHub
         uses: softprops/action-gh-release@v1
         with:
           tag_name: ${{ env.VERSION }}

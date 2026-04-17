@@ -5,6 +5,8 @@ from typing import List
 from django.db import models as m
 from django.conf import settings
 from django.contrib.auth.models import AbstractUser
+import re
+import unicodedata
 
 from django.shortcuts import get_object_or_404
 
@@ -106,62 +108,118 @@ class CreadorDeUsuariosEscolares(ABC):
 class CreadorDeProfesores(CreadorDeUsuariosEscolares):
 
     def crearUsuarioEscolar(self, **kwargs) -> None:
-        
         grupo_id = kwargs.get('grupo')
-        
+
         try:
             grupo = Grupo.objects.get(id=grupo_id)
-            return Profesor.objects.create(
+            profesor = Profesor(
                 username=kwargs.get('username'),
+                email=kwargs.get('email'),
                 first_name=kwargs.get('nombre'),
                 last_name=kwargs.get('apellido'),
-                password=kwargs.get('contrasena'),
                 grupo=grupo
             )
+            profesor.set_password(kwargs.get('contrasena'))
+            profesor.save()
+            return profesor
         except Grupo.DoesNotExist:
-             print(f"Error: No se encontró el grupo con ID {grupo_id}")
+            raise ValueError(f"No se encontró el grupo con ID {grupo_id}")
             
 
 class CreadorDeTutores(CreadorDeUsuariosEscolares):
     def crearUsuarioEscolar(self, **kwargs) -> None:
-        return Tutor.objects.create(
+        tutor = Tutor(
             username=kwargs.get('username'),
+            email=kwargs.get('email'),
             first_name=kwargs.get('nombre'),
-            last_name=kwargs.get('apellido'),
-            password=kwargs.get('contrasena')
+            last_name=kwargs.get('apellido')
         )
+        tutor.set_password(kwargs.get('contrasena'))
+        tutor.save()
+        return tutor
 
 class CreadorDeAlumnos(CreadorDeUsuariosEscolares):
-    
+
     def crearUsuarioEscolar(self, **kwargs) -> None:
-        
         tutorId = kwargs.get('tutor')
         try:
             tutor = Tutor.objects.get(id=tutorId)
-            return Alumno.objects.create(
-                username=kwargs.get('username'),
+
+            nombre = kwargs.get('nombre', '').strip().lower()
+            apellido = kwargs.get('apellido', '').strip().lower()
+
+            def limpiar(texto):
+                texto = unicodedata.normalize('NFKD', texto).encode('ascii', 'ignore').decode('ascii')
+                return re.sub(r'[^a-z0-9]', '', texto)
+
+            base = f"{limpiar(nombre.split()[0])}.{limpiar(apellido.split()[0])}"
+
+            username_generado = base
+            contador = 1
+
+            while Alumno.objects.filter(username=username_generado).exists():
+                username_generado = f"{base}{contador}"
+                contador += 1
+
+            alumno = Alumno(
+                username=username_generado,
+                email='',
                 first_name=kwargs.get('nombre'),
                 last_name=kwargs.get('apellido'),
-                password=kwargs.get('contrasena'),
                 tutorAlumno=tutor
             )
+            alumno.set_unusable_password()
+            alumno.save()
+            return alumno
         except Tutor.DoesNotExist:
-            print(f"Error: No se encontró el tutor con ID {tutorId}")
+            raise ValueError(f"No se encontró el tutor con ID {tutorId}")
         
 class CreadorDeNutricionistas(CreadorDeUsuariosEscolares):
     def crearUsuarioEscolar(self, **kwargs) -> None:
-        return Nutricionista.objects.create(
+        nutricionista = Nutricionista(
             username=kwargs.get('username'),
+            email=kwargs.get('email'),
+            first_name=kwargs.get('nombre'),
+            last_name=kwargs.get('apellido')
+        )
+        nutricionista.set_password(kwargs.get('contrasena'))
+        nutricionista.save()
+        return nutricionista
+    
+class CreadorDeAdministradores(CreadorDeUsuariosEscolares):
+    def crearUsuarioEscolar(self, **kwargs) -> UsuarioEscolar:
+        admin = UsuarioEscolar(
+            username=kwargs.get('username'),
+            email=kwargs.get('email'),
             first_name=kwargs.get('nombre'),
             last_name=kwargs.get('apellido'),
-            password=kwargs.get('contrasena')
+            is_staff=True,
+            is_superuser=True
         )
+        admin.set_password(kwargs.get('contrasena'))
+        admin.save()
+        return admin
+    
+
+class CreadorDeCocinero(CreadorDeUsuariosEscolares):
+    def crearUsuarioEscolar(self, **kwargs) -> UsuarioEscolar:
+        chef = Chef(
+            username=kwargs.get('username'),
+            email=kwargs.get('email'),
+            first_name=kwargs.get('nombre'),
+            last_name=kwargs.get('apellido')
+        )
+        chef.set_password(kwargs.get('contrasena'))
+        chef.save()
+        return chef
 
 Creadores = {
     'Profesor': CreadorDeProfesores(),
     'Tutor': CreadorDeTutores(),
     'Alumno': CreadorDeAlumnos(),
     'Nutricionista': CreadorDeNutricionistas(),
+    'Cocinero': CreadorDeCocinero(),
+    'Administrador': CreadorDeAdministradores(),
 }
 
 class GestorDeGrupos(UsuarioEscolar):
@@ -234,27 +292,27 @@ class GestorDeUsuarios(UsuarioEscolar):
 
 
     @classmethod
-    def crearUsuarioEscolar(cls, nombre, apellido, username, contrasena, rol, **kwargs) -> None:
-        #Si el usuario ya existe, no se crea
-        if UsuarioEscolar.objects.filter(username=username).exists():
-            raise ValueError("Error: El usuario ya existe.")
+    def crearUsuarioEscolar(cls, nombre, apellido, username, email, contrasena, rol, **kwargs):
+        if rol != 'Alumno':
+            if UsuarioEscolar.objects.filter(username__iexact=username).exists():
+                raise ValueError("El nombre de usuario ya existe.")
 
-        #Si el rol no es soportado, no se crea
+            if UsuarioEscolar.objects.filter(email__iexact=email).exists():
+                raise ValueError("El correo electrónico ya existe.")
+
         creador = Creadores.get(rol)
         if not creador:
-            raise ValueError(f"Error: Rol no soportado: {rol}")
+            raise ValueError(f"Rol no soportado: {rol}")
 
-        try:
-            creador.crearUsuarioEscolar(
-                nombre=nombre,
-                apellido=apellido,
-                username=username,
-                contrasena=contrasena,
-                **kwargs
-            )
-        except ValueError as e:
-            print(e)
-        
+        return creador.crearUsuarioEscolar(
+            nombre=nombre,
+            apellido=apellido,
+            username=username,
+            email=email,
+            contrasena=contrasena,
+            **kwargs
+        )
+            
     @classmethod
     def eliminarUsuarioEscolar(cls, usuarioId : int) -> bool:
         try:
@@ -266,39 +324,56 @@ class GestorDeUsuarios(UsuarioEscolar):
             return False
             
     @classmethod
-    def modificarUsuarioEscolar(cls, usuarioId: int, nombre, apellido, nombreUsuario, contrasena, rol, **kwargs) -> bool:
-        
+    def modificarUsuarioEscolar(cls, usuarioId: int, nombre, apellido, nombreUsuario, email, contrasena, rol, **kwargs) -> bool:
         try:
             usuario = UsuarioEscolar.objects.get(id=usuarioId)
+
             if rol == 'Profesor':
-                return cls.__modificarProfesor(usuario, nombre, apellido, nombreUsuario, contrasena, **kwargs)
+                return cls.__modificarProfesor(usuario, nombre, apellido, nombreUsuario, email, contrasena, **kwargs)
             elif rol == 'Alumno':
-                return cls.__modificarAlumno(usuario, nombre, apellido, nombreUsuario, contrasena, **kwargs)
+                return cls.__modificarAlumno(usuario, nombre, apellido, nombreUsuario, email, contrasena, **kwargs)
             else:
-                cls.__actualizarAtributos(usuario, nombre, apellido, nombreUsuario, contrasena)
+                cls.__actualizarAtributos(usuario, nombre, apellido, nombreUsuario, contrasena, email=email)
                 usuario.save()
                 return True
-                
+
         except UsuarioEscolar.DoesNotExist:
             print("El usuario no existe.")
             return False
     
     @staticmethod
-    def __modificarProfesor(profesor, nombre, apellido, nombreUsuario, contrasena, **kwargs) -> bool:
+    def __modificarProfesor(profesor, nombre, apellido, nombreUsuario, email, contrasena, **kwargs) -> bool:
         grupo_id = kwargs.get('grupo')
         try:
-            GestorDeUsuarios.__actualizarAtributos(profesor, nombre, apellido, nombreUsuario, contrasena, grupo=grupo_id)
+            GestorDeUsuarios.__actualizarAtributos(
+                profesor,
+                nombre,
+                apellido,
+                nombreUsuario,
+                contrasena,
+                grupo=grupo_id,
+                email=email
+            )
             profesor.save()
             return True
         except Grupo.DoesNotExist:
             print(f"Error: No se encontró el grupo con ID {grupo_id}")
             return False
 
+   
     @staticmethod
-    def __modificarAlumno(alumno, nombre, apellido, nombreUsuario, contrasena, **kwargs) -> bool:
+    def __modificarAlumno(alumno, nombre, apellido, nombreUsuario, email, contrasena, **kwargs) -> bool:
         tutor_id = kwargs.get('tutor')
         try:
-            GestorDeUsuarios.__actualizarAtributos(alumno, nombre, apellido, nombreUsuario, contrasena, tutor=tutor_id)
+            if nombre is not None:
+                alumno.first_name = nombre
+            if apellido is not None:
+                alumno.last_name = apellido
+
+            if tutor_id is not None:
+                tutor = Tutor.objects.get(id=tutor_id)
+                alumno.tutorAlumno = tutor
+
             alumno.save()
             return True
         except Tutor.DoesNotExist:
@@ -308,34 +383,35 @@ class GestorDeUsuarios(UsuarioEscolar):
     
     @staticmethod
     def __actualizarAtributos(usuario, nombre, apellido, nombreUsuario, contrasena, **kwargs) -> None:
-
         tutorId = kwargs.get('tutor')
         grupoId = kwargs.get('grupo')
-        
+        email = kwargs.get('email')
+
         if nombre is not None:
             usuario.first_name = nombre
         if apellido is not None:
             usuario.last_name = apellido
         if nombreUsuario is not None:
             usuario.username = nombreUsuario
+        if email is not None:
+            usuario.email = email
         if contrasena is not None:
-            usuario.password = contrasena
-        
+            usuario.set_password(contrasena)
+
         if hasattr(usuario, 'tutorAlumno') and tutorId is not None:
             try:
                 tutor = Tutor.objects.get(id=tutorId)
                 usuario.tutorAlumno = tutor
             except Tutor.DoesNotExist:
-                print(f"Error: No se encontró el tutor con ID {tutorId}")
+                raise ValueError(f"No se encontró el tutor con ID {tutorId}")
 
         if hasattr(usuario, 'grupo') and grupoId is not None:
             try:
                 grupo = Grupo.objects.get(id=grupoId)
                 usuario.grupo = grupo
             except Grupo.DoesNotExist:
-                print(f"Error: No se encontró el grupo con ID {grupoId}")
-            
-            
+                raise ValueError(f"No se encontró el grupo con ID {grupoId}")
+                
     class Meta:
         verbose_name = "AdministradorUsuarios"
         verbose_name_plural = "AdministradoresUsuarios"

@@ -1,26 +1,26 @@
 {% load static %}
 <!doctype html>
 <html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Bee Kids • Acceso</title>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Bee Kids • Acceso</title>
 
-  <style>
-    body {
-        font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
         background-color: #f3f4f6;
         margin: 0;
         color: #333;
-    }
+      }
 
-    .wrap {
+      .wrap {
         max-width: 980px;
         margin: 0 auto;
         padding: 30px 20px 40px;
-    }
+      }
 
-    .topbar {
+      .topbar {
         background-color: #ffffff;
         border-radius: 15px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
@@ -29,48 +29,65 @@
         justify-content: space-between;
         align-items: center;
         margin-bottom: 20px;
-    }
+      }
 
-    .brand { display: flex; align-items: center; gap: 12px; }
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
 
-    .logo {
+      .logo {
         width: 44px;
         height: 44px;
         border-radius: 12px;
-        background-color: #007BFF;
-    }
+        background-color: #007bff;
+      }
 
-    .title h1 { margin: 0; font-size: 1.3rem; }
-    .title p { margin: 0; font-size: 0.85rem; color: #6b7280; }
+      .title h1 {
+        margin: 0;
+        font-size: 1.3rem;
+      }
+      .title p {
+        margin: 0;
+        font-size: 0.85rem;
+        color: #6b7280;
+      }
 
-    .hero {
+      .hero {
         background-color: #ffffff;
         border-radius: 15px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         padding: 22px;
         margin-bottom: 20px;
-    }
+      }
 
-    .grid {
+      .grid {
         display: grid;
         grid-template-columns: 1fr;
         gap: 14px;
-    }
+      }
 
-    @media (min-width: 820px){
-        .grid { grid-template-columns: 1fr 1fr; }
-    }
+      @media (min-width: 820px) {
+        .grid {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
 
-    .card {
+      .card {
         background-color: #ffffff;
         border-radius: 15px;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         padding: 18px;
-    }
+      }
 
-    .row { display:flex; gap:10px; flex-wrap:wrap; }
+      .row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
 
-    .btn {
+      .btn {
         padding: 10px 16px;
         border-radius: 8px;
         font-weight: 600;
@@ -78,72 +95,67 @@
         text-decoration: none;
         border: none;
         cursor: pointer;
-        transition: background-color 0.2s ease, transform 0.1s ease;
+        transition:
+          background-color 0.2s ease,
+          transform 0.1s ease;
         background-color: #e5e7eb;
         color: #333;
-    }
+      }
 
-    .btn.primary {
-        background-color: #007BFF;
+      .btn.primary {
+        background-color: #007bff;
         color: #fff;
-    }
+      }
 
-    .btn.primary:hover {
+      .btn.primary:hover {
         background-color: #0056b3;
-    }
+      }
 
-    footer {
+      footer {
         text-align: center;
         margin-top: 30px;
         color: #6b7280;
         font-size: 12px;
-    }
-</style>
+      }
+    </style>
+  </head>
 
-
-</head>
-
-<body>
-  <div class="wrap">
-    <header class="topbar">
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div class="title">
-          <h1>Bee Kids</h1>
-          <p>Acceso al sistema</p>
+  <body>
+    <div class="wrap">
+      <header class="topbar">
+        <div class="brand">
+          <div class="logo" aria-hidden="true"></div>
+          <div class="title">
+            <h1>Bee Kids</h1>
+            <p>Acceso al sistema</p>
+          </div>
         </div>
-      </div>
-      <nav>
-        <a class="btn" href="/admin/">Django Admin</a>
-      </nav>
-    </header>
+        <nav>
+          <a class="btn" href="/admin/">Django Admin</a>
+        </nav>
+      </header>
 
-    <section class="hero">
-      <h2>Bienvenid@</h2>
-      <p>Para continuar, inicia sesión o crea una cuenta. Después se te redigirá directamente al panel de administración.</p>
-    </section>
-
-    <main class="grid">
-      <section class="card">
-        <h3>Iniciar sesión</h3>
-        <p>Accede con tu usuario y contraseña.</p>
-        <div class="row">
-          <a class="btn primary" href="{% url 'iniciar_sesion' %}">Entrar</a>
-        </div>
+      <section class="hero">
+        <h2>Bienvenid@</h2>
+        <p>
+          Para continuar, inicia sesión o crea una cuenta. Después se te
+          redigirá directamente al panel de administración.
+        </p>
       </section>
 
-      <section class="card">
-        <h3>Registrarse</h3>
-        <p>Crea una cuenta nueva para entrar al sistema.</p>
-        <div class="row">
-          <a class="btn" href="{% url 'registrarse' %}">Crear cuenta</a>
-        </div>
-      </section>
-    </main>
-  </div>
+      <main class="grid">
+        <section class="card">
+          <h3>Iniciar sesión</h3>
+          <p>Accede con tu usuario y contraseña.</p>
+          <div class="row">
+            <a class="btn primary" href="{% url 'iniciar_sesion' %}">Entrar</a>
+          </div>
+        </section>
+      </main>
+    </div>
 
-  <footer>
-    © {{ now|date:"Y" }} Bee Kids • Todos los derechos reservados
-  </footer>
-</body>
+    <footer>
+      © {{ now|date:"Y" }} Bee Kids • Todos los derechos reservados
+    </footer>
+  </body>
 </html>

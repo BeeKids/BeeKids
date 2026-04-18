@@ -1,155 +1,677 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Crear Usuario</title>
     <style>
-        body {
-            font-family: 'Poppins', sans-serif; 
-            background-color: #f4f6f9;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+      :root {
+        --color-fondo: #f4f6f9;
+        --color-tarjeta: #ffffff;
+        --color-texto: #333333;
+        --color-texto-secundario: #666666;
+        --color-borde: #d7dbe0;
 
+        --color-primario: #3498db;
+        --color-primario-hover: #2980b9;
+        --color-secundario: #95a5a6;
+        --color-secundario-hover: #7f8c8d;
+        --color-enlace: #16a085;
+        --color-enlace-hover: #12816e;
+
+        --color-error: #c0392b;
+        --color-error-fondo: #fdecea;
+        --color-error-borde: #f5b7b1;
+
+        --color-exito: #27ae60;
+        --color-exito-fondo: #eafaf1;
+        --color-exito-borde: #a3e4d7;
+
+        --radio: 12px;
+        --sombra: 0 6px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: var(--color-fondo);
+        margin: 0;
+        padding: 30px 15px;
+        color: var(--color-texto);
+      }
+
+      .contenedor {
+        width: 100%;
+        max-width: 860px;
+        margin: 0 auto;
+        background-color: var(--color-tarjeta);
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: var(--sombra);
+      }
+
+      .encabezado {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      h1 {
+        font-size: 34px;
+        color: var(--color-texto);
+        margin: 0 0 10px 0;
+        font-weight: bold;
+      }
+
+      .mensajes {
+        margin: 0 0 22px 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .mensajes li {
+        padding: 12px 14px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.5;
+        transition:
+          opacity 0.4s ease,
+          transform 0.4s ease;
+      }
+
+      .mensajes .error {
+        background-color: var(--color-error-fondo);
+        color: var(--color-error);
+        border: 1px solid var(--color-error-borde);
+      }
+
+      .mensajes .success {
+        background-color: var(--color-exito-fondo);
+        color: var(--color-exito);
+        border: 1px solid var(--color-exito-borde);
+      }
+
+      .mensaje-fade {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      .error-general {
+        background-color: var(--color-error-fondo);
+        border: 1px solid var(--color-error-borde);
+        color: var(--color-error);
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+
+      .seccion {
+        border: 1px solid #e4e8ed;
+        border-radius: 14px;
+        padding: 24px;
+        background-color: #ffffff;
+      }
+
+      .seccion-titulo {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0 0 10px 0;
+        color: var(--color-texto);
+      }
+
+      .seccion-descripcion {
+        margin: 0 0 20px 0;
+        color: var(--color-texto-secundario);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 20px;
+      }
+
+      .campo {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .campo-completo {
+        grid-column: 1 / -1;
+      }
+
+      .campo label {
+        font-weight: 600;
+        font-size: 15px;
+        color: #444444;
+      }
+
+      .campo-input {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+        border: 1px solid var(--color-borde);
+        border-radius: 10px;
+        transition:
+          border-color 0.3s ease,
+          box-shadow 0.3s ease,
+          background-color 0.3s ease;
+        background-color: #ffffff;
+        color: var(--color-texto);
+      }
+
+      .campo-input:focus {
+        border-color: var(--color-primario);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+      }
+
+      .campo-input.error {
+        border-color: var(--color-error);
+        background-color: #fff8f8;
+      }
+
+      .campo-input.valido {
+        border-color: var(--color-primario);
+        background-color: #f8fbff;
+      }
+
+      .help-text {
+        color: var(--color-texto-secundario);
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .error-texto {
+        color: var(--color-error);
+        font-size: 13px;
+        margin: 0;
+        line-height: 1.4;
+      }
+
+      .password-wrapper {
+        display: flex;
+        gap: 10px;
+        align-items: stretch;
+      }
+
+      .password-wrapper .campo-input {
+        flex: 1;
+      }
+
+      .btn-toggle {
+        min-width: 110px;
+        padding: 12px 14px;
+        border: 1px solid var(--color-borde);
+        border-radius: 10px;
+        background-color: #f7f7f7;
+        color: #444444;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+      }
+
+      .btn-toggle:hover {
+        background-color: #ececec;
+      }
+
+      .aviso-alumno {
+        background-color: #f4f6f9;
+        border: 1px solid var(--color-borde);
+        color: var(--color-texto-secundario);
+        padding: 12px;
+        border-radius: 8px;
+        font-size: 14px;
+        line-height: 1.5;
+        display: none;
+      }
+
+      .acciones {
+        display: flex;
+        gap: 12px;
+        margin-top: 6px;
+      }
+
+      .boton-principal,
+      .boton-secundario,
+      .enlace-boton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 50px;
+        padding: 15px;
+        border: none;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        transition:
+          background-color 0.3s ease,
+          transform 0.2s ease,
+          box-shadow 0.2s ease;
+      }
+
+      .boton-principal,
+      .boton-secundario {
+        flex: 1;
+      }
+
+      .boton-principal {
+        background-color: var(--color-primario);
+        color: #ffffff;
+      }
+
+      .boton-principal:hover {
+        background-color: var(--color-primario-hover);
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(52, 152, 219, 0.25);
+      }
+
+      .boton-principal:disabled {
+        opacity: 0.75;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+      }
+
+      .boton-secundario {
+        background-color: var(--color-secundario);
+        color: #ffffff;
+      }
+
+      .boton-secundario:hover {
+        background-color: var(--color-secundario-hover);
+        transform: translateY(-1px);
+      }
+
+      .enlace-boton {
+        width: 100%;
+        margin-top: 14px;
+        background-color: var(--color-enlace);
+        color: #ffffff;
+      }
+
+      .enlace-boton:hover {
+        background-color: var(--color-enlace-hover);
+        transform: translateY(-1px);
+      }
+
+      .campo-oculto {
+        display: none !important;
+      }
+
+      @media (max-width: 768px) {
         .contenedor {
-            width: 90%;
-            max-width: 750px;
-            background-color: #ffffff;
-            padding: 50px;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            text-align: center;
+          padding: 24px 20px;
         }
 
         h1 {
-            font-size: 32px;
-            color: #333;
-            margin-bottom: 30px;
-            font-weight: bold;
+          font-size: 28px;
         }
 
-        .mensajes {
-            margin-bottom: 20px;
-            text-align: left;
+        .grid {
+          grid-template-columns: 1fr;
         }
 
-        .mensajes li {
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            font-size: 14px;
+        .password-wrapper,
+        .acciones {
+          flex-direction: column;
         }
 
-        .mensajes .error {
-            background-color: #fdecea;
-            color: #c0392b;
-            border: 1px solid #f5b7b1;
+        .btn-toggle {
+          width: 100%;
+          min-width: unset;
         }
-
-        .mensajes .exito {
-            background-color: #eafaf1;
-            color: #27ae60;
-            border: 1px solid #a3e4d7;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        form label {
-            font-weight: 500;
-            text-align: left;
-            margin-bottom: 5px;
-            font-size: 16px;
-            color: #555;
-        }
-
-        form input, form select {
-            padding: 15px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-        }
-
-        form input:focus, form select:focus {
-            border-color: #007BFF;
-            outline: none;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
-
-        form button {
-            padding: 15px;
-            background-color: #3498db;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
-        }
-
-        form button:hover {
-            background-color: #2980b9;
-        }
-
-        .enlace {
-            margin-top: 20px;
-            padding: 15px;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
-            background-color: #16a085;
-            width: 100%;
-        }
-
-        .enlace a{
-            color: #ffffff;
-            text-decoration: none;
-        }
-
-        .enlace:hover {
-            background-color: #12816e;
-        }
-
+      }
     </style>
-</head>
-<body>
+  </head>
+  <body>
     <div class="contenedor">
-        <h1>Crear Nuevo Usuario</h1>
+      <div class="encabezado">
+        <h1>Registro</h1>
+      </div>
 
-        <!-- Mensajes de éxito o error -->
-        <ul class="mensajes">
-            {% for message in messages %}
-                <li class="mensaje {% if message.tags %}{{ message.tags }}{% endif %}">
-                    {{ message }}
-                </li>
-            {% endfor %}
-        </ul>
+      {% if messages %}
+      <ul class="mensajes" id="lista-mensajes">
+        {% for message in messages %}
+        <li class="{{ message.tags|default:'' }}">
+          {% if message.tags == 'success' %}
+          <strong>Éxito:</strong>
+          {% elif message.tags == 'error' %}
+          <strong>Error:</strong>
+          {% else %}
+          <strong>Aviso:</strong>
+          {% endif %} {{ message }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
 
-        <!-- Formulario -->
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }} <!-- Renderiza el formulario automáticamente -->
-            <button type="submit">Crear</button>
-        
-        </form>
+      <form method="POST" novalidate id="form-crear-usuario">
+        {% csrf_token %} {% if form.non_field_errors %}
+        <div class="error-general">
+          {% for error in form.non_field_errors %}
+          <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
 
-        <button class="enlace">
-            <a href="{% url 'listaUsuarios' %}">Ver Lista de Usuarios</a>
-        </button>
+        <section class="seccion">
+          <h2 class="seccion-titulo">Tipo de registro</h2>
+          <p class="seccion-descripcion">
+            Selecciona el rol para mostrar únicamente los campos requeridos para
+            el registro.
+          </p>
 
+          <div class="grid">
+            <div class="campo campo-completo">
+              <label for="{{ form.rol.id_for_label }}">Tipo de usuario</label>
+              {{ form.rol }} {% for error in form.rol.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div class="aviso-alumno campo-completo" id="aviso-alumno">
+              Este usuario no iniciará sesión en el sistema. Solo se registrará
+              para vincularlo con un tutor y posteriormente asignarlo a un
+              grupo.
+            </div>
+          </div>
+        </section>
+
+        <section class="seccion">
+          <h2 class="seccion-titulo">Información personal</h2>
+          <p class="seccion-descripcion">
+            Captura los datos básicos de identificación del usuario.
+          </p>
+
+          <div class="grid">
+            <div class="campo">
+              <label for="{{ form.nombre.id_for_label }}">Nombres</label>
+              {{ form.nombre }} {% for error in form.nombre.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div class="campo">
+              <label for="{{ form.apellido.id_for_label }}">Apellidos</label>
+              {{ form.apellido }} {% for error in form.apellido.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+          </div>
+        </section>
+
+        <section class="seccion" id="credenciales-section">
+          <h2 class="seccion-titulo">Credenciales de acceso</h2>
+
+          <div class="grid">
+            <div class="campo campo-completo" id="email-container">
+              <label for="{{ form.email.id_for_label }}"
+                >Correo electrónico</label
+              >
+              {{ form.email }} {% if form.email.help_text %}
+              <small class="help-text">{{ form.email.help_text }}</small>
+              {% endif %} {% for error in form.email.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div class="campo campo-completo" id="username-container">
+              <label for="{{ form.username.id_for_label }}"
+                >Nombre de usuario</label
+              >
+              {{ form.username }} {% if form.username.help_text %}
+              <small class="help-text">{{ form.username.help_text }}</small>
+              {% endif %} {% for error in form.username.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div class="campo campo-completo" id="contrasena-container">
+              <label for="{{ form.contrasena.id_for_label }}">Contraseña</label>
+              <div class="password-wrapper">
+                {{ form.contrasena }}
+                <button type="button" class="btn-toggle" id="togglePassword">
+                  Mostrar
+                </button>
+              </div>
+              {% if form.contrasena.help_text %}
+              <small class="help-text">{{ form.contrasena.help_text }}</small>
+              {% endif %} {% for error in form.contrasena.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div
+              class="campo campo-completo"
+              id="confirmar-contrasena-container"
+            >
+              <label for="{{ form.confirmar_contrasena.id_for_label }}">
+                Confirmar contraseña
+              </label>
+              <div class="password-wrapper">
+                {{ form.confirmar_contrasena }}
+                <button
+                  type="button"
+                  class="btn-toggle"
+                  id="toggleConfirmPassword"
+                >
+                  Mostrar
+                </button>
+              </div>
+              {% for error in form.confirmar_contrasena.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+          </div>
+        </section>
+
+        <section class="seccion" id="asignacion-section">
+          <h2 class="seccion-titulo">Asignación</h2>
+          <p class="seccion-descripcion">
+            Completa la asignación según el rol seleccionado.
+          </p>
+
+          <div class="grid">
+            <div class="campo campo-completo" id="grupo-container">
+              <label for="{{ form.grupo.id_for_label }}">Grupo</label>
+              {{ form.grupo }} {% for error in form.grupo.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div class="campo campo-completo" id="tutor-container">
+              <label for="{{ form.tutor.id_for_label }}">Tutor</label>
+              {{ form.tutor }} {% for error in form.tutor.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+          </div>
+        </section>
+
+        <div class="acciones">
+          <button type="submit" class="boton-principal" id="submitBtn">
+            Crear usuario
+          </button>
+          <a class="boton-secundario" href="{% url 'administrar' %}">
+            Cancelar
+          </a>
+        </div>
+      </form>
+
+      <a class="enlace-boton" href="{% url 'listaUsuarios' %}">
+        Ver Lista de Usuarios
+      </a>
     </div>
-</body>
+
+    <script>
+      const rolSelect = document.getElementById("id_rol");
+      const grupoContainer = document.getElementById("grupo-container");
+      const tutorContainer = document.getElementById("tutor-container");
+      const emailContainer = document.getElementById("email-container");
+      const usernameContainer = document.getElementById("username-container");
+      const contrasenaContainer = document.getElementById(
+        "contrasena-container"
+      );
+      const confirmarContrasenaContainer = document.getElementById(
+        "confirmar-contrasena-container"
+      );
+      const credencialesSection = document.getElementById(
+        "credenciales-section"
+      );
+      const avisoAlumno = document.getElementById("aviso-alumno");
+      const passwordInput = document.getElementById("id_contrasena");
+      const confirmPasswordInput = document.getElementById(
+        "id_confirmar_contrasena"
+      );
+      const togglePassword = document.getElementById("togglePassword");
+      const toggleConfirmPassword = document.getElementById(
+        "toggleConfirmPassword"
+      );
+      const form = document.getElementById("form-crear-usuario");
+      const submitBtn = document.getElementById("submitBtn");
+      const asignacionSection = document.getElementById("asignacion-section");
+
+      function limpiarCampo(idCampo) {
+        const campo = document.getElementById(idCampo);
+        if (campo) {
+          campo.value = "";
+          campo.classList.remove("error", "valido");
+        }
+      }
+
+      function ocultarElementos() {
+        grupoContainer.classList.add("campo-oculto");
+        tutorContainer.classList.add("campo-oculto");
+        emailContainer.classList.add("campo-oculto");
+        usernameContainer.classList.add("campo-oculto");
+        contrasenaContainer.classList.add("campo-oculto");
+        confirmarContrasenaContainer.classList.add("campo-oculto");
+
+        credencialesSection.classList.remove("campo-oculto");
+        asignacionSection.classList.remove("campo-oculto");
+
+        avisoAlumno.style.display = "none";
+      }
+
+      function actualizarCamposPorRol() {
+        const rol = rolSelect.value;
+        ocultarElementos();
+
+        if (rol === "Profesor") {
+          credencialesSection.classList.remove("campo-oculto");
+          asignacionSection.classList.remove("campo-oculto");
+
+          grupoContainer.classList.remove("campo-oculto");
+          emailContainer.classList.remove("campo-oculto");
+          usernameContainer.classList.remove("campo-oculto");
+          contrasenaContainer.classList.remove("campo-oculto");
+          confirmarContrasenaContainer.classList.remove("campo-oculto");
+
+          limpiarCampo("id_tutor");
+        } else if (rol === "Alumno") {
+          asignacionSection.classList.remove("campo-oculto");
+          tutorContainer.classList.remove("campo-oculto");
+
+          avisoAlumno.style.display = "block";
+          credencialesSection.classList.add("campo-oculto");
+
+          limpiarCampo("id_grupo");
+          limpiarCampo("id_email");
+          limpiarCampo("id_username");
+          limpiarCampo("id_contrasena");
+          limpiarCampo("id_confirmar_contrasena");
+        } else if (
+          rol === "Tutor" ||
+          rol === "Nutricionista" ||
+          rol === "Cocinero" ||
+          rol === "Administrador"
+        ) {
+          credencialesSection.classList.remove("campo-oculto");
+          asignacionSection.classList.add("campo-oculto");
+
+          emailContainer.classList.remove("campo-oculto");
+          usernameContainer.classList.remove("campo-oculto");
+          contrasenaContainer.classList.remove("campo-oculto");
+          confirmarContrasenaContainer.classList.remove("campo-oculto");
+
+          limpiarCampo("id_grupo");
+          limpiarCampo("id_tutor");
+        } else {
+          credencialesSection.classList.add("campo-oculto");
+          asignacionSection.classList.add("campo-oculto");
+        }
+      }
+
+      if (rolSelect) {
+        rolSelect.addEventListener("change", actualizarCamposPorRol);
+        actualizarCamposPorRol();
+      }
+
+      if (togglePassword && passwordInput) {
+        togglePassword.addEventListener("click", function () {
+          const visible = passwordInput.type === "text";
+          passwordInput.type = visible ? "password" : "text";
+          togglePassword.textContent = visible ? "Mostrar" : "Ocultar";
+        });
+      }
+
+      if (toggleConfirmPassword && confirmPasswordInput) {
+        toggleConfirmPassword.addEventListener("click", function () {
+          const visible = confirmPasswordInput.type === "text";
+          confirmPasswordInput.type = visible ? "password" : "text";
+          toggleConfirmPassword.textContent = visible ? "Mostrar" : "Ocultar";
+        });
+      }
+
+      document.querySelectorAll(".campo-input").forEach((input) => {
+        input.addEventListener("blur", () => {
+          const contenedorCampo = input.closest(".campo");
+          if (
+            !contenedorCampo ||
+            contenedorCampo.classList.contains("campo-oculto")
+          ) {
+            input.classList.remove("error", "valido");
+            return;
+          }
+
+          if (input.value.trim() === "") {
+            input.classList.remove("valido");
+            input.classList.add("error");
+          } else {
+            input.classList.remove("error");
+            input.classList.add("valido");
+          }
+        });
+      });
+
+      if (form && submitBtn) {
+        form.addEventListener("submit", () => {
+          submitBtn.textContent = "Creando usuario...";
+          submitBtn.disabled = true;
+        });
+      }
+
+      setTimeout(() => {
+        document.querySelectorAll(".mensajes li").forEach((msg) => {
+          msg.classList.add("mensaje-fade");
+          setTimeout(() => msg.remove(), 400);
+        });
+      }, 4000);
+    </script>
+  </body>
 </html>

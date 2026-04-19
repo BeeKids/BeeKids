@@ -172,11 +172,10 @@
           <h2>Asistencia</h2>
           <p>Realiza pase de lista y registrar asistencia.</p>
           <div class="row">
-            <a class="btn primary" href="{% url 'listaGrupos' %}"
-              >Lista de grupos</a
-            >
-            <a class="btn" href="{% url 'paseDeLista' %}">Pasar lista</a>
-            <a class="btn" href="{% url 'registroDeAsistencia' %}">Registrar asistencia</a>
+            <a class="btn primary" href="{% url 'listaGrupos' %}">Lista de grupos</a>
+              <a class="btn " href="{% url 'listaGrupos' %}">Pasar lista</a> 
+              <a class="btn" href="{% url 'listaGrupos' %}">Registro de Asistencia</a>
+            
           </div>
         </section>
 
@@ -197,9 +196,9 @@
           <h2>Calificaciones</h2>
           <p>Registra evaluaciones conductuales de los alumnos.</p>
           <div class="row">
-            <a class="btn primary" href="{% url 'asignarCalificaciones' %}"
-              >Asignar calificaciones</a
-            >
+           
+    <a class="btn" href="{% url 'listaGrupos' %}">Asignar Calificaciones</a>
+
           </div>
         </section>
 

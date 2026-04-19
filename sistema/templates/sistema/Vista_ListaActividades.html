@@ -181,7 +181,7 @@
 <body>
     <h1>Lista de Actividades</h1>
 
-    <form method="GET" action="{% url 'listaActividades' %}">
+    <form method="GET" action="{% if es_tutor %}{% url 'listaActividades_tutor' %}{% else %}{% url 'listaActividades' %}{% endif %}">
         {% csrf_token %}
         <label for="fecha">Selecciona una fecha:</label>
         <input type="date" name="fecha" value="{{ fecha }}" required>
@@ -190,15 +190,17 @@
 
     <div class="botones-actividad">
         {% if fecha %}
-        <a href="{% url 'listaActividades' %}" class="contenedor-boton-volver">
+        <a href="{% if es_tutor %}{% url 'listaActividades_tutor' %}{% else %}{% url 'listaActividades' %}{% endif %}" class="contenedor-boton-volver">
             <button class="boton-volver">Mostrar todas las actividades</button>
         </a>
         {% endif %}
     
         <div class="boton-agregar-actividad">
+            {% if not es_tutor %}
             <a href="{% url 'crearActividad' %}">
                 <button>Agregar Actividad</button>
             </a>
+            {% endif %}
         </div>
     </div>
 
@@ -206,10 +208,11 @@
         {% if actividades %}
             {% for actividad in actividades %}
             <li>
-                <a href="{% url 'detallesDeActividad' actividad.id %}">
+                <a href="{% if es_tutor %}{% url 'detallesDeActividad_tutor' actividad.id %}{% else %}{% url 'detallesDeActividad' actividad.id %}{% endif %}">
                     {{ actividad.nombre }} ({{ actividad.horaInicio }} - {{ actividad.horaFinal }})
                 </a>
                 <div class="acciones-actividad">
+                    {% if not es_tutor %}
                     <form action="{% url 'eliminarActividad' actividad.id %}" method="POST" style="margin: 0;" onsubmit="confirmarEliminacion(event)">
                         {% csrf_token %}
                         <button type="submit" class="boton-eliminar">Eliminar</button>
@@ -217,6 +220,7 @@
                     <a href="{% url 'actualizarActividad' actividad.id %}" class="boton-editar">
                         <button class="boton-eliminar" style="background-color: #3498db;">Editar</button>
                     </a>
+                    {% endif %}
                 </div>
             </li>
             {% endfor %}

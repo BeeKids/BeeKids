@@ -83,7 +83,7 @@
             </form>
         {% endif %}
 
-        <a href="{% url 'listaActividades' %}">Volver a la lista de actividades</a>
+        <a href="{% if es_tutor %}{% url 'listaActividades_tutor' %}{% else %}{% url 'listaActividades' %}{% endif %}">Volver a la lista de actividades</a>
     </div>
 </body>
 

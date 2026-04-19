@@ -159,9 +159,9 @@
         <!-- GRUPOS -->
         <section class="card half">
           <h2>Grupos</h2>
-          <p>Crear, listar y actualizar grupos.</p>
+          <p>Consulta los grupos de tus tutorados.</p>
           <div class="row">
-            <a class="btn primary" href="{% url 'listaGrupos' %}"
+            <a class="btn primary" href="{% url 'listaGrupos_tutor' %}"
               >Lista de grupos</a
             >
           </div>
@@ -171,9 +171,9 @@
         <!-- ACTIVIDADES -->
         <section class="card half">
           <h2>Actividades</h2>
-          <p>Gestiona actividades de tutorados y consulta detalles.</p>
+          <p>Consulta actividades de tus tutorados.</p>
           <div class="row">
-            <a class="btn primary" href="{% url 'listaActividades' %}"
+            <a class="btn primary" href="{% url 'listaActividades_tutor' %}"
               >Lista de actividades</a
             >
           </div>
@@ -182,9 +182,9 @@
          <!-- HORARIOS -->
         <section class="card half">
           <h2>Horarios</h2>
-          <p>Consulta de horarios.</p>
+          <p>Consulta los horarios de tus tutorados.</p>
           <div class="row">
-            <a class="btn primary" href="{% url 'listaHorarios' %}"
+            <a class="btn primary" href="{% url 'listaHorarios_tutor' %}"
               >Lista de horarios</a
             >
           </div>
@@ -195,8 +195,8 @@
           <h2>Asistencia</h2>
           <p>Consulta el registro de asistencia de tutorados.</p>
           <div class="row">
-            <a class="btn primary" href="{% url 'listaAsistencia' %}"
-              >Lista de asistencia</a
+            <a class="btn primary" href="{% url 'listaGrupos_tutor' %}"
+              >Registros de asistencia</a
             >
           </div>
         </section>
@@ -204,10 +204,10 @@
         <!-- COMPORTAMIENTO -->
         <section class="card half">
           <h2>Comportamiento</h2>
-          <p>Consulta el registro de comportamiento de tutorados.</p>
+          <p>Consulta calificaciones de comportamiento de tutorados.</p>
           <div class="row">
-            <a class="btn primary" href="{% url 'listaComportamiento' %}" 
-              >Lista de comportamiento</a 
+            <a class="btn primary" href="{% url 'listaGrupos_tutor' %}" 
+              >Comportamiento</a 
             >
           </div>
         </section>

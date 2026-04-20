@@ -121,18 +121,27 @@
     </div>
 
     <div class="boton-agregar-grupo">
+        {% if not es_tutor %}
         <a href="{% url 'crearGrupo' %}">Agregar Grupo</a>
+        {% endif %}
     </div>
 
     <ul>
         {% if grupos %}
             {% for grupo in grupos %}
             <li>
-                <a href="#">
-                    {{ grupo.nombre }}
-                </a>
+                {% if es_tutor %}
+                    <a href="{% url 'registroDeAsistencia_tutor' grupo.id %}">
+                        {{ grupo.nombre }}
+                    </a>
+                {% else %}
+                    <a href="#">
+                        {{ grupo.nombre }}
+                    </a>
+                {% endif %}
 
                 <div class="acciones-actividad">
+                    {% if not es_tutor %}
                     <form action="{% url 'eliminarGrupo' grupo.id %}" method="POST" style="margin: 0;" onsubmit="confirmarEliminacion(event)">
                         {% csrf_token %}
                         <button type="submit" class="boton-eliminar">Eliminar</button>
@@ -140,6 +149,7 @@
                     <a href="{% url 'modificarGrupo' grupo.id%}" class="boton-editar">
                         <button class="boton-eliminar" style="background-color: #3498db;">Editar</button>
                     </a>
+                    {% endif %}
                 </div>
             </li>
 

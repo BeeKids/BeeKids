@@ -151,10 +151,12 @@
                 <td>{{ horario.horaEntrada }}</td>
                 <td>{{ horario.horaSalida }}</td>
                 <td>
+                    {% if not es_tutor %}
                     <form method="POST" action="{% url 'eliminarHorario' horario.id %}" onsubmit="confirmarEliminacion(event)">
                         {% csrf_token %}
                         <button type="submit">Eliminar</button>
                     </form>
+                    {% endif %}
                 </td>
             </tr>
             {% empty %}
@@ -165,9 +167,11 @@
         </tbody>
     </table>
 
+    {% if not es_tutor %}
     <div class="enlace">
         <a href="{% url 'crearHorario' %}" class="boton">Crear Nuevo Horario</a>
     </div>
+    {% endif %}
 
     <script>
         // Función para confirmar eliminación

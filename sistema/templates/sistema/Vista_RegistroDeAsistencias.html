@@ -98,7 +98,9 @@
             {% endfor %}
         </ul>
 
-        <a href="{% url 'paseDeLista' grupo.id %}" class="boton">Editar Pase de Lista</a>
+        <a href="{% if es_tutor %}{% url 'listaGrupos_tutor' %}{% else %}{% url 'paseDeLista' grupo.id %}{% endif %}" class="boton">
+        {% if es_tutor %}Volver a Grupos{% else %}Editar Pase de Lista{% endif %}
+        </a>
     </div>
 </body>
 </html>

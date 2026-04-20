@@ -40,7 +40,31 @@ def iniciarSesion(request: HttpRequest):
 
         if usuario is not None:
             login(request, usuario)
-            return HttpResponseRedirect(reverse("administrar"))
+
+            # Logica de redirección basada en el rol del usuario
+
+            # 1. Superusuario / Administrador
+            if usuario.is_superuser:
+                return HttpResponseRedirect(reverse("administrar"))
+            
+            # 2. Profesor
+            if hasattr(usuario, 'profesor'):
+                return HttpResponseRedirect(reverse("vista_profesor"))
+            
+            # 3. Tutor
+            if hasattr(usuario, 'tutor'):
+                return HttpResponseRedirect(reverse("vista_tutor"))
+            
+            # 4. Nutricionista
+            if hasattr(usuario, 'nutricionista'):
+                return HttpResponseRedirect(reverse("vista_nutricionista"))
+            
+            # 5. Cocinero (Chef)
+            if hasattr(usuario, 'chef'):
+                return HttpResponseRedirect(reverse("vista_cocinero"))
+
+            # Redirección por defecto si no hay un rol específico asignado
+            return HttpResponseRedirect(reverse("indice"))
 
         return render(request, "sistema/Vista_IniciarSesion.html", {
             "mensaje": "Usuario, correo o contraseña incorrectos."

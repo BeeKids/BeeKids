@@ -171,6 +171,19 @@
         color: var(--color-texto);
       }
 
+      select.campo-input {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+
+        background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
+        background-repeat: no-repeat;
+        background-position: right 14px center;
+        background-size: 18px;
+
+        padding-right: 44px;
+      }
+
       .campo-input:focus {
         border-color: var(--color-primario);
         outline: none;
@@ -201,29 +214,69 @@
       }
 
       .password-wrapper {
+        position: relative;
         display: flex;
-        gap: 10px;
-        align-items: stretch;
+        align-items: center;
       }
 
       .password-wrapper .campo-input {
-        flex: 1;
+        width: 100%;
+        padding-right: 52px;
       }
 
-      .btn-toggle {
-        min-width: 110px;
-        padding: 12px 14px;
-        border: 1px solid var(--color-borde);
-        border-radius: 10px;
-        background-color: #f7f7f7;
-        color: #444444;
-        font-weight: 600;
+      .btn-toggle-password {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 36px;
+        height: 36px;
+        border: none;
+        background: transparent;
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #6b7280;
         cursor: pointer;
-        transition: background-color 0.3s ease;
+        transition:
+          background-color 0.2s ease,
+          color 0.2s ease,
+          box-shadow 0.2s ease;
       }
 
-      .btn-toggle:hover {
-        background-color: #ececec;
+      .btn-toggle-password:hover {
+        background-color: #f3f4f6;
+        color: #374151;
+      }
+
+      .btn-toggle-password:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.18);
+      }
+
+      .btn-toggle-password svg {
+        width: 20px;
+        height: 20px;
+        display: block;
+      }
+
+      .icon-eye {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .icon-hidden {
+        display: none;
+      }
+
+      .btn-toggle-password.is-visible .icon-visible {
+        display: none;
+      }
+
+      .btn-toggle-password.is-visible .icon-hidden {
+        display: inline-flex;
       }
 
       .aviso-alumno {
@@ -240,38 +293,35 @@
       .acciones {
         display: flex;
         gap: 12px;
-        margin-top: 6px;
+        margin-top: 16px;
+        justify-content: flex-end;
       }
 
       .boton-principal,
-      .boton-secundario,
-      .enlace-boton {
+      .boton-secundario-outline {
+        flex: unset;
+        padding: 15px 24px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
         min-height: 50px;
-        padding: 15px;
-        border: none;
         border-radius: 10px;
         font-size: 16px;
-        font-weight: bold;
-        cursor: pointer;
-        text-align: center;
+        font-weight: 700;
         text-decoration: none;
+        text-align: center;
         transition:
           background-color 0.3s ease,
           transform 0.2s ease,
-          box-shadow 0.2s ease;
-      }
-
-      .boton-principal,
-      .boton-secundario {
-        flex: 1;
+          box-shadow 0.2s ease,
+          border-color 0.2s ease;
       }
 
       .boton-principal {
+        border: none;
         background-color: var(--color-primario);
         color: #ffffff;
+        cursor: pointer;
       }
 
       .boton-principal:hover {
@@ -287,26 +337,42 @@
         box-shadow: none;
       }
 
-      .boton-secundario {
-        background-color: var(--color-secundario);
-        color: #ffffff;
+      .boton-secundario-outline {
+        border: 1px solid var(--color-borde);
+        background-color: #ffffff;
+        color: var(--color-texto);
       }
 
-      .boton-secundario:hover {
-        background-color: var(--color-secundario-hover);
+      .boton-secundario-outline:hover {
+        background-color: #f8fafc;
+        border-color: #c8d0d9;
         transform: translateY(-1px);
       }
 
-      .enlace-boton {
-        width: 100%;
-        margin-top: 14px;
-        background-color: var(--color-enlace);
-        color: #ffffff;
+      .acciones-secundarias {
+        margin-top: 12px;
+        display: flex;
+        justify-content: flex-end;
       }
 
-      .enlace-boton:hover {
-        background-color: var(--color-enlace-hover);
-        transform: translateY(-1px);
+      .link-secundario {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--color-enlace);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .link-secundario:hover {
+        color: var(--color-enlace-hover);
+        text-decoration: underline;
+      }
+
+      .link-secundario .icono {
+        display: inline-flex;
+        align-items: center;
       }
 
       .campo-oculto {
@@ -326,14 +392,8 @@
           grid-template-columns: 1fr;
         }
 
-        .password-wrapper,
         .acciones {
           flex-direction: column;
-        }
-
-        .btn-toggle {
-          width: 100%;
-          min-width: unset;
         }
       }
     </style>
@@ -445,10 +505,61 @@
               <label for="{{ form.contrasena.id_for_label }}">Contraseña</label>
               <div class="password-wrapper">
                 {{ form.contrasena }}
-                <button type="button" class="btn-toggle" id="togglePassword">
-                  Mostrar
+                <button
+                  type="button"
+                  class="btn-toggle-password"
+                  id="togglePassword"
+                  aria-label="Mostrar contraseña"
+                  aria-pressed="false"
+                  aria-controls="id_contrasena"
+                  title="Mostrar contraseña"
+                >
+                  <span class="icon-eye icon-visible" aria-hidden="true">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-eye-icon lucide-eye"
+                    >
+                      <path
+                        d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                      />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </span>
+
+                  <span class="icon-eye icon-hidden" aria-hidden="true">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-eye-off-icon lucide-eye-off"
+                    >
+                      <path
+                        d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+                      />
+                      <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+                      <path
+                        d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+                      />
+                      <path d="m2 2 20 20" />
+                    </svg>
+                  </span>
                 </button>
               </div>
+
               {% if form.contrasena.help_text %}
               <small class="help-text">{{ form.contrasena.help_text }}</small>
               {% endif %} {% for error in form.contrasena.errors %}
@@ -467,12 +578,59 @@
                 {{ form.confirmar_contrasena }}
                 <button
                   type="button"
-                  class="btn-toggle"
+                  class="btn-toggle-password"
                   id="toggleConfirmPassword"
+                  aria-label="Mostrar confirmación de contraseña"
+                  aria-pressed="false"
+                  aria-controls="id_confirmar_contrasena"
+                  title="Mostrar confirmación de contraseña"
                 >
-                  Mostrar
+                  <span class="icon-eye icon-visible" aria-hidden="true">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-eye-icon lucide-eye"
+                    >
+                      <path
+                        d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                      />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </span>
+
+                  <span class="icon-eye icon-hidden" aria-hidden="true">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-eye-off-icon lucide-eye-off"
+                    >
+                      <path
+                        d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+                      />
+                      <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+                      <path
+                        d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+                      />
+                      <path d="m2 2 20 20" />
+                    </svg>
+                  </span>
                 </button>
               </div>
+
               {% for error in form.confirmar_contrasena.errors %}
               <p class="error-texto" role="alert">{{ error }}</p>
               {% endfor %}
@@ -504,18 +662,37 @@
         </section>
 
         <div class="acciones">
+          <a class="boton-secundario-outline" href="{% url 'administrar' %}">
+            Cancelar
+          </a>
+
           <button type="submit" class="boton-principal" id="submitBtn">
             Crear usuario
           </button>
-          <a class="boton-secundario" href="{% url 'administrar' %}">
-            Cancelar
+        </div>
+
+        <div class="acciones-secundarias">
+          <a class="link-secundario" href="{% url 'listaUsuarios' %}">
+            <span class="icono">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m12 19-7-7 7-7" />
+                <path d="M19 12H5" />
+              </svg>
+            </span>
+            Volver a la lista de usuarios
           </a>
         </div>
       </form>
-
-      <a class="enlace-boton" href="{% url 'listaUsuarios' %}">
-        Ver Lista de Usuarios
-      </a>
     </div>
 
     <script>
@@ -534,14 +711,6 @@
         "credenciales-section"
       );
       const avisoAlumno = document.getElementById("aviso-alumno");
-      const passwordInput = document.getElementById("id_contrasena");
-      const confirmPasswordInput = document.getElementById(
-        "id_confirmar_contrasena"
-      );
-      const togglePassword = document.getElementById("togglePassword");
-      const toggleConfirmPassword = document.getElementById(
-        "toggleConfirmPassword"
-      );
       const form = document.getElementById("form-crear-usuario");
       const submitBtn = document.getElementById("submitBtn");
       const asignacionSection = document.getElementById("asignacion-section");
@@ -617,30 +786,53 @@
         }
       }
 
+      function configurarTogglePassword(
+        buttonId,
+        inputId,
+        showLabel,
+        hideLabel
+      ) {
+        const button = document.getElementById(buttonId);
+        const input = document.getElementById(inputId);
+
+        if (!button || !input) return;
+
+        button.addEventListener("click", function () {
+          const isVisible = input.type === "text";
+
+          input.type = isVisible ? "password" : "text";
+          button.classList.toggle("is-visible", !isVisible);
+          const label = !isVisible ? hideLabel : showLabel;
+
+          button.setAttribute("aria-pressed", String(!isVisible));
+          button.setAttribute("aria-label", label);
+          button.setAttribute("title", label);
+        });
+      }
+
       if (rolSelect) {
         rolSelect.addEventListener("change", actualizarCamposPorRol);
         actualizarCamposPorRol();
       }
 
-      if (togglePassword && passwordInput) {
-        togglePassword.addEventListener("click", function () {
-          const visible = passwordInput.type === "text";
-          passwordInput.type = visible ? "password" : "text";
-          togglePassword.textContent = visible ? "Mostrar" : "Ocultar";
-        });
-      }
+      configurarTogglePassword(
+        "togglePassword",
+        "id_contrasena",
+        "Mostrar contraseña",
+        "Ocultar contraseña"
+      );
 
-      if (toggleConfirmPassword && confirmPasswordInput) {
-        toggleConfirmPassword.addEventListener("click", function () {
-          const visible = confirmPasswordInput.type === "text";
-          confirmPasswordInput.type = visible ? "password" : "text";
-          toggleConfirmPassword.textContent = visible ? "Mostrar" : "Ocultar";
-        });
-      }
+      configurarTogglePassword(
+        "toggleConfirmPassword",
+        "id_confirmar_contrasena",
+        "Mostrar confirmación de contraseña",
+        "Ocultar confirmación de contraseña"
+      );
 
       document.querySelectorAll(".campo-input").forEach((input) => {
         input.addEventListener("blur", () => {
           const contenedorCampo = input.closest(".campo");
+
           if (
             !contenedorCampo ||
             contenedorCampo.classList.contains("campo-oculto")

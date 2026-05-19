@@ -9,12 +9,14 @@ https://docs.djangoproject.com/en/4.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.1/ref/settings/
 """
-
+import os
+import dj_database_url
 from pathlib import Path
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -77,12 +79,24 @@ TEMPLATES = [
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+ENVIRONMENT = os.environ.get('BEEKIDS_ENV', 'STAGING')
+
+if ENVIRONMENT == 'PRODUCTION':
+    DATABASE_URL_ENV = os.environ.get('DATABASE_URL_PRODUCTION')
+else:
+    DATABASE_URL_ENV = os.environ.get('DATABASE_URL_STAGING')
+
+if DATABASE_URL_ENV and DATABASE_URL_ENV.startswith('postgresql://'):
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL_ENV, conn_max_age=600, ssl_require=True)
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 AUTH_USER_MODEL = "sistema.UsuarioEscolar" 
 

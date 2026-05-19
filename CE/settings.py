@@ -79,13 +79,24 @@ TEMPLATES = [
 # Database
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
-DATABASES = {
-    'default': dj_database_url.config(
-        default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}",
-        conn_max_age=600,
-        ssl_require=True if os.environ.get('DATABASE_URL') else False
-    )
-}
+ENVIRONMENT = os.environ.get('BEEKIDS_ENV', 'STAGING')
+
+if ENVIRONMENT == 'PRODUCTION':
+    DATABASE_URL_ENV = os.environ.get('DATABASE_URL_PRODUCTION')
+else:
+    DATABASE_URL_ENV = os.environ.get('DATABASE_URL_STAGING')
+
+if DATABASE_URL_ENV and DATABASE_URL_ENV.startswith('postgresql://'):
+    DATABASES = {
+        'default': dj_database_url.parse(DATABASE_URL_ENV, conn_max_age=600, ssl_require=True)
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
 
 AUTH_USER_MODEL = "sistema.UsuarioEscolar" 
 

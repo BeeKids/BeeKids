@@ -38,6 +38,13 @@ if RENDER_HOST:
 
 ALLOWED_HOSTS.append('.onrender.com')
 
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1', 'http://localhost']
+
+if RENDER_HOST:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{RENDER_HOST}')
+
+CSRF_TRUSTED_ORIGINS.append('https://*.onrender.com')
+
 
 # Application definition
 

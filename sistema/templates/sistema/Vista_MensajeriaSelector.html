@@ -1,10 +1,6 @@
+{% extends 'sistema/base.html' %}
 {% load static %}
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Mensajería</title>
+{% block title %}Mensajería | BeeKids{% endblock %}
 
   <style>
     body {
@@ -12,6 +8,10 @@
         background-color: #f3f4f6;
         margin: 0;
         color: #333;
+    }
+
+    h1{
+      text-align: center;
     }
 
     .wrap {
@@ -77,19 +77,15 @@
     p { margin: 0 0 12px; color: #6b7280; font-size: 13px; }
 </style>
 
-</head>
-<body>
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
   <div class="wrap">
-    <header class="topbar">
       <div>
         <h1>Mensajería</h1>
         <p>Elige el tipo de conversación.</p>
       </div>
-      <nav style="display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end;">
-        <a class="btn" href="{% url 'administrar' %}">Volver al panel</a>
-        <a class="btn" href="{% url 'cerrar_sesion' %}">Cerrar sesión</a>
-      </nav>
-    </header>
 
     <main class="grid">
       <!-- GENERAL -->
@@ -114,5 +110,4 @@
       </section>
     </main>
   </div>
-</body>
-</html>
+{% endblock %}

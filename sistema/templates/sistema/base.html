@@ -1,0 +1,178 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{% block title %}BeeKids{% endblock %}</title>
+
+    <style>
+      /* --- ESTILOS GLOBALES --- */
+      body {
+        font-family: "Segoe UI", Tahoma, Verdana, sans-serif;
+        background-color: #f3f4f6;
+        margin: 0;
+        color: #333;
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+
+      .wrap {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 30px 20px 40px;
+        flex: 1;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      /* --- NAVBAR / TOPBAR --- */
+      .topbar {
+        background-color: #ffffff;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        padding: 15px 22px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+        flex-wrap: wrap; 
+        gap: 15px;
+      }
+
+      .brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: inherit;
+      }
+
+      .logo {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        background-color: #007bff;
+      }
+
+      .title h1 {
+        margin: 0;
+        font-size: 1.3rem;
+      }
+
+      .title p {
+        margin: 0;
+        font-size: 0.8rem;
+        color: #6b7280;
+      }
+
+      /* --- ENLACES DE NAVEGACIÓN (EL NUEVO MENÚ) --- */
+      /* --- ENLACES DE NAVEGACIÓN --- */
+      .main-nav {
+        display: flex;
+        gap: 8px; 
+        align-items: center;
+        flex-wrap: wrap;
+        justify-content: center;
+        flex: 1; 
+      }
+
+      .main-nav a {
+        text-decoration: none;
+        color: #4b5563;
+        font-weight: 600;
+        font-size: 0.9rem;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+      }
+
+      .main-nav a:hover {
+        background-color: #f3f4f6;
+        color: #007bff;
+      }
+
+      /* --- BOTONES DE ACCIÓN (Derecha) --- */
+      .actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+
+      .btn {
+        padding: 9px 15px;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s ease, transform 0.1s ease;
+        background-color: #e5e7eb;
+        color: #333;
+      }
+      .btn:hover { transform: translateY(-2px); }
+      .btn.danger { background-color: #ff6b6b; color: white; }
+      .btn.danger:hover { background-color: #e05b5b; }
+
+      /* --- FOOTER --- */
+      .site-footer {
+        background-color: #007bff;
+        text-align: center;
+        padding: 20px;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+        color: #ffffff;
+        font-size: 0.85rem;
+      }
+
+    </style>
+
+    {% block extra_css %}{% endblock %}
+  </head>
+
+  <body>
+    <div class="wrap">
+      
+      <header class="topbar">
+        
+        <a href="/" class="brand"> 
+          <div class="logo" aria-hidden="true"></div>
+          <div class="title">
+            <h1>BeeKids</h1>
+            <p>Panel Principal</p>
+          </div>
+        </a>
+
+        <nav class="main-nav" aria-label="Navegación principal">
+          <a href="{% url 'administrar' %}">Panel de Administración</a>
+          <a href="{% url 'listaGrupos' %}">Grupos</a>
+          <a href="{% url 'listaUsuarios' %}">Usuarios</a>
+          <a href="{% url 'listaActividades' %}">Actividades</a>
+          <a href="{% url 'listaHorarios' %}">Horarios</a>
+          <a href="{% url 'seleccionarMenuSemanal' %}">Cocina</a>
+          <a href="{% url 'mensajeria' %}">Mensajería</a>
+        </nav>
+
+        <div class="actions">
+          {% if user.is_authenticated %}
+            <a class="btn danger" href="{% url 'cerrar_sesion' %}">Cerrar sesión</a>
+          {% endif %}
+        </div>
+
+      </header>
+
+      <main>
+        {% block content %}
+        {% endblock %}
+      </main>
+
+    </div>
+
+    <footer class="site-footer">
+      <p>&copy; {% now "Y" %} Sistema BeeKids. Todos los derechos reservados.</p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+  </body>
+</html>

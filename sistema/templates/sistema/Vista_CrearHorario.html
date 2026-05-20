@@ -1,148 +1,156 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Horario</title>
+{% extends 'sistema/base.html' %}
+
+{% block title %}Crear Horario | BeeKids{% endblock %}
+
+{% block extra_css %}
     <style>
-        body {
-            font-family: 'Poppins', sans-serif; 
-            background-color: #f4f6f9;
-            margin: 0;
+        /* 1. Contenedor para centrar la tarjeta */
+        .centrar-horario {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            padding-top: 30px;
         }
 
-        .contenedor {
-            width: 90%;
-            max-width: 750px;
+        /* 2. Tarjeta blanca */
+        .contenedor-horario {
+            width: 100%;
+            max-width: 700px;
             background-color: #ffffff;
-            padding: 50px;
+            padding: 40px;
             border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra BeeKids */
             text-align: center;
+            box-sizing: border-box;
         }
 
-        h1 {
-            font-size: 32px;
+        /* 3. Título específico */
+        .titulo-horario {
+            font-size: 28px;
             color: #333;
+            margin-top: 0;
             margin-bottom: 30px;
             font-weight: bold;
         }
 
-        .mensajes {
+        /* 4. Alertas / Mensajes */
+        .mensajes-horario {
             margin-bottom: 20px;
             text-align: left;
+            list-style: none;
+            padding: 0;
         }
 
-        .mensajes li {
+        .mensajes-horario li {
             padding: 12px;
             border-radius: 6px;
             margin-bottom: 10px;
             font-size: 14px;
         }
+        .mensajes-horario .error { background-color: #fdecea; color: #c0392b; border: 1px solid #f5b7b1; }
+        .mensajes-horario .exito { background-color: #eafaf1; color: #27ae60; border: 1px solid #a3e4d7; }
 
-        .mensajes .error {
-            background-color: #fdecea;
-            color: #c0392b;
-            border: 1px solid #f5b7b1;
-        }
-
-        .mensajes .exito {
-            background-color: #eafaf1;
-            color: #27ae60;
-            border: 1px solid #a3e4d7;
-        }
-
-        form {
+        /* 5. Formulario y campos */
+        .form-horario {
             display: flex;
             flex-direction: column;
             gap: 20px;
-        }
-
-        form label {
-            font-weight: 500;
             text-align: left;
-            margin-bottom: 5px;
-            font-size: 16px;
-            color: #555;
         }
 
-        form input, form select {
-            padding: 15px;
-            font-size: 16px;
-            border: 1px solid #ddd;
+        .form-horario label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            font-size: 15px;
+            color: #4b5563;
+        }
+
+        .form-horario input, .form-horario select {
+            width: 100%;
+            padding: 12px;
+            font-size: 15px;
+            border: 1px solid #d1d5db;
             border-radius: 8px;
-            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        form input:focus, form select:focus {
+        .form-horario input:focus, .form-horario select:focus {
             border-color: #007BFF;
             outline: none;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.3);
         }
 
-        form button {
+        /* 6. Botones estandarizados */
+        .btn-guardar {
             padding: 15px;
             background-color: #3498db;
             color: #ffffff;
             border: none;
             border-radius: 8px;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
         }
+        .btn-guardar:hover { background-color: #2980b9; transform: translateY(-2px); }
 
-        form button:hover {
-            background-color: #2980b9;
-        }
-
-        .enlace {
+        .btn-enlace {
+            display: block;
+            text-align: center;
+            padding: 15px;
             background-color: #16a085;
-        }
-
-        .enlace a {
             color: #ffffff;
             text-decoration: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            width: 100%;
+            box-sizing: border-box;
         }
-
-        .enlace:hover {
-            background-color: #12816e;
-        }
+        .btn-enlace:hover { background-color: #12816e; transform: translateY(-2px); }
     </style>
-</head>
-<body>
-    <div class="contenedor">
-        <h1>Crear Nuevo Horario</h1>
+{% endblock %}
 
-        <!-- Mensajes -->
-        <ul class="mensajes" id="mensajes">
-            {% for message in messages %}
-                <li class="mensaje {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}exito{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}error{% endif %}">
-                    {{ message }}
-                </li>
-            {% endfor %}
-        </ul>
+{% block content %}
+    <div class="centrar-horario">
+        <div class="contenedor-horario">
+            
+            <h1 class="titulo-horario">Crear Nuevo Horario</h1>
 
-        <form method="POST" action="{% url 'crearHorario' %}">
-            {% csrf_token %}
-            {% for field in form %}
-                <div>
-                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
-                    {{ field }}
-                </div>
-            {% endfor %}
-            <button type="submit">Guardar Horario</button>
+            {% if messages %}
+            <ul class="mensajes-horario" id="mensajes">
+                {% for message in messages %}
+                    <li class="mensaje {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}exito{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}error{% endif %}">
+                        {{ message }}
+                    </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
 
-            <button class="enlace">
-                <a href="{% url 'listaHorarios' %}">Ver Lista de Horarios</a>
-            </button>
-        </form>
+            <form class="form-horario" method="POST" action="{% url 'crearHorario' %}">
+                {% csrf_token %}
+                
+                {% for field in form %}
+                    <div>
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {{ field }}
+                    </div>
+                {% endfor %}
+                
+                <button type="submit" class="btn-guardar">Guardar Horario</button>
+                <a href="{% url 'listaHorarios' %}" class="btn-enlace">Ver Lista de Horarios</a>
+                
+            </form>
+
+        </div>
     </div>
+{% endblock %}
 
+{% block extra_js %}
     <script>
         // Desaparecer mensajes después de 2 segundos
         document.addEventListener('DOMContentLoaded', () => {
@@ -159,5 +167,4 @@
             }, 2000);
         });
     </script>
-</body>
-</html>
+{% endblock %}

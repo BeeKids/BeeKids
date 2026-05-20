@@ -1,63 +1,80 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Opciones Menú</title>
+{% extends 'sistema/base.html' %} {% block title %}Opciones de Menú | BeeKids{% endblock %}
+
+{% block extra_css %}
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        /* Contenedor principal para centrar la tarjeta */
+        .centrar-opciones {
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
-            height: 100vh;
-            margin: 0;
-            background-color: #f0f0f0;
+            align-items: center;
+            padding-top: 50px;
         }
-        h1 {
-            margin-bottom: 40px;
-            font-size: 3rem; 
+
+        /* Tarjeta blanca para mantener la consistencia del sistema */
+        .contenedor-opciones {
+            background-color: #ffffff;
+            padding: 50px 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra estándar */
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .titulo-opciones {
+            margin-top: 0;
+            margin-bottom: 35px;
+            font-size: 2.2rem; 
             color: #333;
+            font-weight: bold;
         }
-        .botones {
+
+        .botones-opciones {
             display: flex;
             flex-direction: column;
             gap: 20px;
         }
-        button {
-            width: 300px; 
-            padding: 15px; 
-            font-size: 1.5rem; 
+
+        /* Estilo específico para estos botones gigantes */
+        .btn-opcion {
+            display: block;
+            width: 100%; 
+            padding: 16px; 
+            font-size: 1.3rem; 
             background-color: #007BFF;
             color: white;
-            border: none;
+            text-decoration: none; /* Como ahora son enlaces, quitamos el subrayado */
             border-radius: 10px; 
-            cursor: pointer;
+            font-weight: 600;
             transition: background-color 0.3s ease, transform 0.2s ease;
+            box-sizing: border-box;
         }
-        button:hover {
+
+        .btn-opcion:hover {
             background-color: #0056b3;
-            transform: scale(1.05); 
+            transform: scale(1.03); /* Efecto de crecimiento sutil */
         }
-        button:active {
-            transform: scale(0.95); 
+
+        .btn-opcion:active {
+            transform: scale(0.98); 
         }
     </style>
-</head>
-<body>
-    <h1>Menú</h1>
-    <div class="botones">
-        <form method="get" action="{% url 'gestionarRecomendaciones' %}">
-            <button type="submit">Gestionar Recomendaciones</button>
-        </form>
-        <form method="get" action="{% url 'crearMenuSemanal' %}">
-            <button type="submit">Crear Menú</button>
-        </form>
-        <form method="get" action="{% url 'seleccionarMenuSemanal' %}">
-            <button type="submit">Seleccionar Menú</button>
-        </form>
-    </div>
+{% endblock %}
 
-</body>
-</html>
+{% block content %}
+    <div class="centrar-opciones">
+        <div class="contenedor-opciones">
+            
+            <h1 class="titulo-opciones">Menú de Cocina</h1>
+            
+            <div class="botones-opciones">
+                <a href="{% url 'gestionarRecomendaciones' %}" class="btn-opcion">Gestionar Platillos</a>
+                
+                <a href="{% url 'crearMenuSemanal' %}" class="btn-opcion">Crear Menú</a>
+                
+                <a href="{% url 'seleccionarMenuSemanal' %}" class="btn-opcion">Seleccionar Menú</a>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

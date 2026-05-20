@@ -1,49 +1,44 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Creación de Platillos</title>
+{% extends 'sistema/base.html' %} {% block title %}Crear Platillo | BeeKids{% endblock %}
+
+{% block extra_css %}
     <style>
-        /* Estilos generales */
-        body {
-            font-family: 'Segoe UI', Tahoma, Verdana, sans-serif;
-            background-color: #f3f4f6;
+        /* Contenedor especial para centrar SOLO esta tarjeta */
+        .centrar-platillo {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            padding-top: 30px;
         }
 
-        .form-container {
+        .contenedor-platillo {
             background-color: #ffffff;
             padding: 40px;
             border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra estándar del sistema */
             width: 100%;
             max-width: 450px;
             box-sizing: border-box;
         }
 
-        h1 {
+        .titulo-platillo {
             font-size: 2rem;
             text-align: center;
             color: #333;
-            margin-bottom: 20px;
+            margin-top: 0;
+            margin-bottom: 25px;
             font-weight: 600;
         }
 
-        /* Estilo de los labels */
-        label {
-            font-size: 1.1rem;
+        /* Estilos específicos del formulario */
+        .form-platillo label {
+            font-size: 1.05rem;
             color: #333;
             margin-bottom: 8px;
             display: block;
+            font-weight: 500;
         }
 
-        /* Estilo de los inputs y textarea */
-        input, textarea {
+        .form-platillo input, .form-platillo textarea {
             width: 100%;
             padding: 12px;
             margin-bottom: 20px;
@@ -52,71 +47,63 @@
             font-size: 1rem;
             color: #333;
             background-color: #fafafa;
+            box-sizing: border-box;
             transition: border-color 0.3s ease, background-color 0.3s ease;
         }
 
-        input:focus, textarea:focus {
+        .form-platillo input:focus, .form-platillo textarea:focus {
             border-color: #007BFF;
             background-color: #fff;
             outline: none;
         }
 
-        textarea {
+        .form-platillo textarea {
             resize: vertical;
             min-height: 120px;
         }
 
-        /* Estilo de los botones */
-        button {
-            padding: 12px 20px;
-            font-size: 1.1rem;
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            width: 48%;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        button:active {
-            transform: scale(0.98);
-        }
-
         /* Contenedor de botones */
-        .button-container {
+        .botones-accion {
             display: flex;
             justify-content: space-between;
-            margin-top: 20px;
+            gap: 15px;
+            margin-top: 10px;
+        }
+
+        /* Clase para que los botones ocupen la mitad exacta */
+        .btn-mitad {
+            flex: 1;
+            padding: 12px;
+            font-size: 1.05rem;
+            text-align: center;
         }
     </style>
-</head>
-<body>
+{% endblock %}
 
-    <div class="form-container">
-        <h1>Crear Platillo</h1>
-        <!-- Formulario de Django -->
-        <form action="{% url 'crearRecomendacion' %}" method="POST">
-            {% csrf_token %}
-            <label for="nombre">Nombre:</label>
-            <input type="text" id="nombre" name="nombre" required placeholder="Escribe el nombre del platillo">
-        
-            <label for="descripcion">Descripción:</label>
-            <textarea id="descripcion" name="descripcion" required placeholder="Escribe la descripción del platillo"></textarea>
-        
-            <label for="comentarios">Consideraciones:</label>
-            <textarea id="comentarios" name="consideraciones" required placeholder="Escribe Consideraciones adicionales"></textarea>
-        
-            <div class="button-container">
-                <button type="submit">Guardar</button>
-                <button type="reset">Cancelar</button>
-            </div>
-        </form>               
+{% block content %}
+    <div class="centrar-platillo">
+        <div class="contenedor-platillo">
+            
+            <h1 class="titulo-platillo">Crear Platillo</h1>
+            
+            <form class="form-platillo" action="{% url 'crearRecomendacion' %}" method="POST">
+                {% csrf_token %}
+                
+                <label for="nombre">Nombre:</label>
+                <input type="text" id="nombre" name="nombre" required placeholder="Escribe el nombre del platillo">
+            
+                <label for="descripcion">Descripción:</label>
+                <textarea id="descripcion" name="descripcion" required placeholder="Escribe la descripción del platillo"></textarea>
+            
+                <label for="comentarios">Consideraciones:</label>
+                <textarea id="comentarios" name="consideraciones" required placeholder="Escribe consideraciones adicionales"></textarea>
+            
+                <div class="botones-accion">
+                    <button type="submit" class="btn primary btn-mitad">Guardar</button>
+                    <button type="reset" class="btn btn-mitad">Cancelar</button>
+                </div>
+            </form>               
+            
+        </div>
     </div>
-
-</body>
-</html>
+{% endblock %}

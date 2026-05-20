@@ -30,7 +30,13 @@ SECRET_KEY = os.environ.get(
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('BEEKIDS_ENV', 'STAGING') != 'PRODUCTION'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.render.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
+
+RENDER_HOST = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_HOST:
+    ALLOWED_HOSTS.append(RENDER_HOST)
+
+ALLOWED_HOSTS.append('.onrender.com')
 
 
 # Application definition

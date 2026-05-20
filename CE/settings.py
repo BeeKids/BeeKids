@@ -22,12 +22,15 @@ load_dotenv()
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-q!mdyid-^=8_hglks^2&2ua#5q9$gg-^fvs9sa612t7vjifg=c'
+SECRET_KEY = os.environ.get(
+    'SECRET_KEY', 
+    'django-insecure-q!mdyid-^=8_hglks^2&2ua#5q9$gg-^fvs9sa612t7vjifg=c'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get('BEEKIDS_ENV', 'STAGING') != 'PRODUCTION'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '.render.com']
 
 
 # Application definition
@@ -146,6 +149,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

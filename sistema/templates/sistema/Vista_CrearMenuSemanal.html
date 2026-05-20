@@ -1,99 +1,86 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Menú</title>
-    <style>
-        /* Los mismos estilos de la creación de platillos que se hicieron antes */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f3f4f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
+{% extends 'sistema/base.html' %} {% block title %}Crear Menú | BeeKids{% endblock %}
 
-        .form-container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 500px;
-            box-sizing: border-box;
-        }
+{% block extra_css %}
+<style>
+    /* Contenedor para centrar la tarjeta en el espacio disponible */
+    .centrar-menu {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding-top: 30px;
+    }
 
-        h1 {
-            font-size: 2rem;
-            text-align: center;
-            color: #333;
-            margin-bottom: 20px;
-            font-weight: 600;
-        }
+    .form-container-menu {
+        background-color: #ffffff;
+        padding: 40px;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra estándar de BeeKids */
+        width: 100%;
+        max-width: 500px;
+        box-sizing: border-box;
+    }
 
-        label {
-            font-size: 1.1rem;
-            color: #333;
-            margin-bottom: 8px;
-            display: block;
-        }
+    .titulo-menu {
+        font-size: 2rem;
+        text-align: center;
+        color: #333;
+        margin-top: 0;
+        margin-bottom: 25px;
+        font-weight: 600;
+    }
 
-        input, select, textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            color: #333;
-            background-color: #fafafa;
-            transition: border-color 0.3s ease, background-color 0.3s ease;
-        }
+    .form-menu label {
+        font-size: 1.05rem;
+        color: #333;
+        margin-bottom: 8px;
+        display: block;
+        font-weight: 500;
+    }
 
-        input:focus, select:focus, textarea:focus {
-            border-color: #007BFF;
-            background-color: #fff;
-            outline: none;
-        }
+    .form-menu input {
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 25px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 1rem;
+        color: #333;
+        background-color: #fafafa;
+        box-sizing: border-box; /* Evita que el input se salga del borde */
+        transition: border-color 0.3s ease, background-color 0.3s ease;
+    }
 
-        button {
-            padding: 12px 20px;
-            font-size: 1.1rem;
-            background-color: #007BFF;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-            width: 48%;
-        }
+    .form-menu input:focus {
+        border-color: #007BFF;
+        background-color: #fff;
+        outline: none;
+    }
 
-        button:hover {
-            background-color: #0056b3;
-        }
+    .button-container {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
+        margin-top: 10px;
+    }
 
-        button:active {
-            transform: scale(0.98);
-        }
+    /* Clase para que los botones ocupen la mitad cada uno */
+    .btn-mitad {
+        flex: 1;
+        padding: 12px;
+        font-size: 1.05rem;
+    }
+</style>
+{% endblock %}
 
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
+{% block content %}
+<div class="centrar-menu">
+    <div class="form-container-menu">
+        
+        <h1 class="titulo-menu">Crear Menú</h1>
 
-    </style>
-</head>
-<body>
-    <div class="form-container">
-        <h1>Crear Menú</h1>
-
-        <!-- Formulario de Django -->
-        <form action="{% url 'crearMenuSemanal' %}"  method="POST">
+        <form class="form-menu" action="{% url 'crearMenuSemanal' %}" method="POST">
             {% csrf_token %}
+            
             <label for="nombre">Nombre del Menú:</label>
             <input type="text" id="nombre" name="nombre" required placeholder="Escribe el nombre del menú">
 
@@ -104,11 +91,11 @@
             <input type="date" id="fecha_fin" name="fecha_fin" required>
 
             <div class="button-container">
-                <button type="submit">Guardar</button>
-                <button type="reset">Cancelar</button>
+                <button type="submit" class="btn primary btn-mitad">Guardar</button>
+                <button type="reset" class="btn btn-mitad">Cancelar</button>
             </div>
+            
         </form>
     </div>
-
-</body>
-</html>
+</div>
+{% endblock %}

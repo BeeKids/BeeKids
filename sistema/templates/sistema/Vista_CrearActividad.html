@@ -1,113 +1,142 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registro de Actividades</title>
+{% extends 'sistema/base.html' %}
+
+{% block title %}Crear Actividad | BeeKids{% endblock %}
+
+{% block extra_css %}
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #eef2f7;
+        /* 1. Contenedor especial para centrar SOLO esta tarjeta */
+        .centrar-actividad {
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            padding-top: 30px;
         }
-        .contenedor {
+
+        /* 2. Estilos de la tarjeta blanca */
+        .contenedor-actividad {
             background-color: #ffffff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            max-width: 400px;
+            padding: 35px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra estándar */
+            max-width: 450px;
             width: 100%;
+            box-sizing: border-box;
         }
-        h1 {
+
+        /* 3. Título con clase específica */
+        .titulo-actividad {
             color: #333;
             font-size: 24px;
             text-align: center;
-            margin-bottom: 20px;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-weight: 600;
         }
-        form {
+
+        /* 4. Estilos para que el formulario de Django se vea bonito */
+        .form-actividad {
             display: flex;
             flex-direction: column;
         }
-        button, .btn-secundario {
-            padding: 12px;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-            text-align: center;
-            transition: background-color 0.3s ease;
+
+        .form-actividad p {
+            display: flex;
+            flex-direction: column;
+            margin: 0 0 15px 0;
         }
-        button {
+
+        .form-actividad label {
+            font-weight: 600;
+            color: #4b5563;
+            margin-bottom: 5px;
+            font-size: 0.95rem;
+        }
+
+        .form-actividad input, .form-actividad select, .form-actividad textarea {
+            padding: 10px 12px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-actividad input:focus, .form-actividad select:focus, .form-actividad textarea:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        /* 5. Botones específicos de esta vista usando las clases globales .btn */
+        .btn-guardar {
             background-color: #28a745;
             color: #ffffff;
+            width: 100%;
+            padding: 12px;
             margin-top: 10px;
+            font-size: 1rem;
+            box-sizing: border-box;
         }
-        button:hover {
-            background-color: #218838;
-        }
+        .btn-guardar:hover { background-color: #218838; }
+
         .btn-secundario {
             background-color: #007bff;
             color: #ffffff;
-            margin-top: 10px;
-            text-decoration: none;
+            width: 100%;
+            padding: 12px;
+            margin-top: 15px;
+            font-size: 1rem;
+            box-sizing: border-box;
             display: block;
             text-align: center;
         }
-        .btn-secundario:hover {
-            background-color: #0056b3;
-        }
+        .btn-secundario:hover { background-color: #0056b3; }
+
+        /* 6. Alertas/Mensajes */
         .mensajes {
             list-style: none;
             padding: 0;
+            margin-top: 0;
             margin-bottom: 20px;
         }
         .mensajes li {
-            padding: 10px;
+            padding: 12px;
             margin-bottom: 10px;
-            border-radius: 5px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            text-align: center;
         }
-        .mensajes .error {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        .mensajes .exito {
-            background-color: #d4edda;
-            color: #155724;
-        }
+        .mensajes .error { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .mensajes .exito { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
     </style>
-</head>
-<body>
-    <div class="contenedor">
-        <h1>Registro de Actividades</h1>
+{% endblock %}
 
-        <!-- Mostrar los mensajes de error o éxito -->
-        {% if messages %}
-            <ul class="mensajes">
-                {% for message in messages %}
-                    {% if message.tags == "error" %}
-                        <li class="error">{{ message }}</li>
-                    {% elif message.tags == "success" %}
-                        <li class="exito">{{ message }}</li>
-                    {% else %}
-                        <li>{{ message }}</li>
-                    {% endif %}
-                {% endfor %}
-            </ul>
-        {% endif %}
+{% block content %}
+    <div class="centrar-actividad">
+        <div class="contenedor-actividad">
+            
+            <h1 class="titulo-actividad">Registro de Actividades</h1>
 
-        <!-- Formulario para crear actividades -->
-        <form method="POST" action="{% url 'crearActividad' %}">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Guardar Actividad</button>
-        </form>
+            {% if messages %}
+                <ul class="mensajes">
+                    {% for message in messages %}
+                        {% if message.tags == "error" %}
+                            <li class="error">{{ message }}</li>
+                        {% elif message.tags == "success" %}
+                            <li class="exito">{{ message }}</li>
+                        {% else %}
+                            <li>{{ message }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
 
-        <a href="{% url 'listaActividades' %}" class="btn-secundario">Ver Lista de Actividades</a>
+            <form class="form-actividad" method="POST" action="{% url 'crearActividad' %}">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="btn btn-guardar">Guardar Actividad</button>
+            </form>
+
+            <a href="{% url 'listaActividades' %}" class="btn btn-secundario">Ver Lista de Actividades</a>
+            
+        </div>
     </div>
-</body>
-</html>
+{% endblock %}

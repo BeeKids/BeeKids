@@ -1,9 +1,7 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lista de Grupos</title>
+{% extends 'sistema/base.html' %} {% block title %}Lista de Actividades | BeeKids{% endblock %}
+
+{% block extra_css %}
+
     <style>
         /* Reutilizamos el estilo existente */
         body {
@@ -13,12 +11,7 @@
             background-color: #f0f4f8;
         }
         h1 {
-            background-color: #3a7bd5;
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            margin: 0;
-            font-size: 2em;
+        text-align: center;
         }
         ul {
             list-style: none;
@@ -97,6 +90,11 @@
             color: blue;
         }
     </style>
+
+{% endblock %}
+
+{% block extra_js %}
+
     <script>
         function confirmarEliminacion(event) {
             if (!confirm("¿Estás seguro de que deseas eliminar este grupo?")) {
@@ -104,7 +102,11 @@
             }
         }
     </script>
-</head>
+
+{% endblock %}
+
+{% block content %}
+
 <body>
     <h1>Lista de Grupos</h1>
 
@@ -170,7 +172,4 @@
             <li class="no-grupos">No hay grupos registrados.</li>
         {% endif %}
     </ul>
-</body>
-
-
-</html>
+{% endblock %}

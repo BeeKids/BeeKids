@@ -12,6 +12,7 @@ urlpatterns = [
 
     # --- NUEVAS RUTAS: PANELES DE CONTROL POR ROL ---
     # Estas son las URLs a las que el sistema redirigirá tras el login
+    path('panel/administrador/', views_administrador.administrar, name='vista_administrador'),
     path('panel/profesor/', views_profesor.vista_profesor, name='vista_profesor'),
     path('panel/tutor/', views_tutor.vista_tutor, name='vista_tutor'),
     path('panel/nutricionista/', views_nutricionista.vista_nutricionista, name='vista_nutricionista'),

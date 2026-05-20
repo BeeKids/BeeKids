@@ -1,102 +1,143 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Gestionar Platillos</title>
+{% extends 'sistema/base.html' %} {% block title %}Gestionar Platillos | BeeKids{% endblock %}
+
+{% block extra_css %}
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        h1 { text-align: center; color: #333; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        th { background-color: #f4f4f4; }
-        td { vertical-align: top; }
-        a, button {
-            text-decoration: none;
-            padding: 8px 12px;
-            color: white;
-            background-color: #007bff;
-            border-radius: 5px;
-            margin-right: 10px;
-        }
-        button {
-            background-color: #dc3545;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #c82333;
-        }
-        a:hover, button:hover {
-            background-color: #0056b3;
+        /* Contenedor para centrar la tarjeta de la tabla */
+        .centrar-platillos {
+            display: flex;
+            justify-content: center;
+            padding-top: 20px;
         }
 
-        .button-container {
-            margin: 20px 0;
+        .contenedor-platillos {
+            width: 100%;
+            max-width: 1000px; /* Un poco más ancho porque es una tabla */
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra estándar */
+            box-sizing: border-box;
+        }
+
+        /* Barra superior para los botones de acción */
+        .acciones-superiores {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .titulo-platillos {
+            text-align: center;
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        /* Estilos específicos para la tabla */
+        .tabla-platillos {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .tabla-platillos th, .tabla-platillos td {
+            border: 1px solid #e5e7eb;
+            padding: 12px 15px;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .tabla-platillos th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #4b5563;
+        }
+
+        .tabla-platillos tr:nth-child(even) {
+            background-color: #fbfbfc;
+        }
+
+        /* Contenedor para que los botones de la tabla no se amontonen */
+        .acciones-fila {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        /* Alertas / Mensajes */
+        .mensajes-platillos {
+            margin-bottom: 20px;
+            padding: 12px;
+            background-color: #eafaf1;
+            color: #27ae60;
+            border: 1px solid #a3e4d7;
+            border-radius: 8px;
             text-align: center;
         }
-
-        .button-container a {
-            display: inline-block;
-            padding: 12px 20px;
-            font-size: 1rem;
-            background-color: #28a745;
-            color: white;
-            border-radius: 8px;
-            text-decoration: none;
-            transition: background-color 0.3s ease, transform 0.2s ease;
-        }
-
-        .button-container a:hover {
-            background-color: #218838;
-        }
     </style>
-</head>
-<body>
-    <a href="{% url 'opcionesMenu' %}" class="button-container">Opciones Menú</a>
+{% endblock %}
 
-    <h1>Gestión de Platillos</h1>
+{% block content %}
+    <div class="centrar-platillos">
+        <div class="contenedor-platillos">
+            
+            <div class="acciones-superiores">
+                <a href="{% url 'opcionesMenu' %}" class="btn"> Opciones Menú</a>
+                <a href="{% url 'crearRecomendacion' %}" class="btn primary">Agregar Platillo +</a>
+            </div>
 
-    <!-- Botón para agregar nueva recomendación -->
-    <div class="button-container">
-        <a href="{% url 'crearRecomendacion' %}">Agregar Platillo</a>
+            <h1 class="titulo-platillos">Gestión de Platillos</h1>
+
+            {% if messages %}
+                {% for message in messages %}
+                    <div class="mensajes-platillos">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endif %}
+
+            <div style="overflow-x: auto;"> <table class="tabla-platillos">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Descripción</th>
+                            <th>Consideraciones</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for platillo in platillos %}
+                        <tr>
+                            <td>{{ platillo.nombre }}</td>
+                            <td>{{ platillo.descripcion }}</td>
+                            <td>{{ platillo.consideraciones }}</td>
+                            <td>
+                                <div class="acciones-fila">
+                                    <a href="{% url 'editarRecomendacion' platillo_id=platillo.id %}" class="btn" style="background-color: #3498db; color: white;">Editar</a>
+                                    
+                                    <form action="{% url 'eliminarRecomendacion' platillo_id=platillo.id %}" method="POST" style="margin: 0;">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este platillo?');">Eliminar</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4" style="text-align: center; color: #6b7280; font-style: italic;">
+                                No hay platillos registrados todavía.
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
     </div>
-
-    <!-- Mensajes de éxito o error -->
-    {% if messages %}
-    <div class="messages">
-        {% for message in messages %}
-        <p>{{ message }}</p>
-        {% endfor %}
-    </div>
-    {% endif %}
-
-    <!-- Tabla de recomendaciones -->
-    <table>
-        <thead>
-            <tr>
-                <th>Nombre</th>
-                <th>Descripción</th>
-                <th>Consideraciones</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for platillo in platillos %}
-            <tr>
-                <td>{{ platillo.nombre }}</td>
-                <td>{{ platillo.descripcion }}</td>
-                <td>{{ platillo.consideraciones }}</td>
-                <td>
-                    <a href="{% url 'editarRecomendacion' platillo_id=platillo.id %}">Editar</a>
-                    <!-- Redirige a la vista de confirmación para eliminar -->
-                    <form action="{% url 'eliminarRecomendacion' platillo_id=platillo.id %}" method="POST" style="display:inline;">
-                        {% csrf_token %}
-                        <button type="submit" onclick="return confirm('¿Estás seguro de que deseas eliminar esta recomendación?');">Eliminar</button>
-                    </form>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-</body>
-</html>
+{% endblock %}

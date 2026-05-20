@@ -1,18 +1,20 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crear Horario</title>
+{% extends 'sistema/base.html' %}
+{% block title %}Seleccionar Menú Semanal | BeeKids{% endblock %}
+{% block extra_css %}
     <style>
-        body {
-            font-family: 'Poppins', sans-serif; 
-            background-color: #f4f6f9;
-            margin: 0;
+        .centrar-seleccion {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            padding-top: 40px; /* Un poco de espacio desde el Navbar */
+        }
+
+        .titulo-seleccion {
+            font-size: 2.5rem;
+            margin-top: 0;
+            margin-bottom: 25px;
+            color: #333;
+            font-weight: 600;
         }
 
         .contenedor {
@@ -124,31 +126,38 @@
         }
         
     </style>
-</head>
-<body>
-    <div class="contenedor">
-        <h1>Crear Nuevo Grupo</h1>
+{% endblock %}
+{% block content %}
 
-        <!-- Mensajes de éxito o error -->
-        <ul class="mensajes">
-            {% for message in messages %}
-                <li class="mensaje {% if message.tags %}{{ message.tags }}{% endif %}">
-                    {{ message }}
-                </li>
-            {% endfor %}
-        </ul>
+    <div class="centrar-seleccion">
+            <div class="contenedor">
+                <h1 class="titulo-seleccion">Crear Nuevo Grupo</h1>
 
-        <!-- Formulario -->
-        <form method="POST">
-            {% csrf_token %}
-            {{ form.as_p }} <!-- Renderiza el formulario automáticamente -->
-            <button type="submit">Guardar Grupo</button>
-        </form>
+                <div class="centrar-seleccion">
 
-        <button class="enlace">
-            <a href="{% url 'listaGrupos' %}">Ver Lista de Grupos</a>
-        </button>
+                </div>
 
+                <!-- Mensajes de éxito o error -->
+                <ul class="mensajes">
+                    {% for message in messages %}
+                        <li class="mensaje {% if message.tags %}{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </li>
+                    {% endfor %}
+                </ul>
+
+                <!-- Formulario -->
+                <form method="POST">
+                    {% csrf_token %}
+                    {{ form.as_p }} <!-- Renderiza el formulario automáticamente -->
+                    <button type="submit">Guardar Grupo</button>
+                </form>
+
+                <button class="enlace">
+                    <a href="{% url 'listaGrupos' %}">Ver Lista de Grupos</a>
+                </button>
+
+            </div>
     </div>
-</body>
-</html>
+    
+{% endblock %}

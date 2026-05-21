@@ -1,101 +1,338 @@
-{% extends 'sistema/base.html' %} {% block title %}Crear Menú | BeeKids{% endblock %}
+{% extends 'sistema/base.html' %}
+
+{% block title %}Crear menú semanal | BeeKids{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Contenedor para centrar la tarjeta en el espacio disponible */
-    .centrar-menu {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        padding-top: 30px;
+  :root {
+    --color-fondo: #f4f6f9;
+    --color-tarjeta: #ffffff;
+    --color-texto: #333333;
+    --color-texto-secundario: #666666;
+    --color-borde: #d7dbe0;
+
+    --color-primario: #3498db;
+    --color-primario-hover: #2980b9;
+
+    --color-enlace: #16a085;
+    --color-enlace-hover: #12816e;
+
+    --sombra: 0 6px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  body {
+  font-family: "Poppins", sans-serif;
+  background-color: var(--color-fondo);
+  margin: 0;
+  color: var(--color-texto);
+}
+
+  .contenedor {
+  width: 100%;
+  max-width: 860px;
+  margin: 30px auto 40px auto;
+  background-color: var(--color-tarjeta);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: var(--sombra);
+}
+
+  .encabezado {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  h1 {
+    font-size: 34px;
+    margin: 0;
+    font-weight: bold;
+  }
+
+  .mensajes {
+    margin: 0 0 22px 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mensajes li {
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .mensaje-fade {
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease;
+  }
+
+  .mensajes .error {
+    background-color: #fdecea;
+    color: #c0392b;
+    border: 1px solid #f5b7b1;
+  }
+
+  .mensajes .success {
+    background-color: #eafaf1;
+    color: #27ae60;
+    border: 1px solid #a3e4d7;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .seccion {
+    border: 1px solid #e4e8ed;
+    border-radius: 14px;
+    padding: 24px;
+    background-color: #ffffff;
+  }
+
+  .seccion-titulo {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+  }
+
+  .seccion-descripcion {
+    margin: 0 0 20px 0;
+    color: var(--color-texto-secundario);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px 20px;
+  }
+
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .campo-completo {
+    grid-column: 1 / -1;
+  }
+
+  label {
+    font-weight: 600;
+    font-size: 15px;
+    color: #444444;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border: 1px solid var(--color-borde);
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: var(--color-texto);
+    font-family: "Poppins", sans-serif;
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--color-primario);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+  }
+
+  .acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .boton-principal,
+  .boton-secundario-outline {
+    padding: 15px 24px;
+    min-height: 50px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: "Poppins", sans-serif;
+  }
+
+  .boton-principal {
+    background-color: var(--color-primario);
+    color: #ffffff;
+    border: none;
+  }
+
+  .boton-principal:hover {
+    background-color: var(--color-primario-hover);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.25);
+  }
+
+  .boton-secundario-outline {
+    background-color: #ffffff;
+    color: var(--color-texto);
+    border: 1px solid var(--color-borde);
+  }
+
+  .boton-secundario-outline:hover {
+    background-color: #f8fafc;
+    border-color: #c8d0d9;
+  }
+
+  .acciones-secundarias {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .link-secundario {
+    color: var(--color-enlace);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .link-secundario:hover {
+    color: var(--color-enlace-hover);
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .contenedor {
+      padding: 24px 20px;
     }
 
-    .form-container-menu {
-        background-color: #ffffff;
-        padding: 40px;
-        border-radius: 15px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra estándar de BeeKids */
-        width: 100%;
-        max-width: 500px;
-        box-sizing: border-box;
+    h1 {
+      font-size: 28px;
     }
 
-    .titulo-menu {
-        font-size: 2rem;
-        text-align: center;
-        color: #333;
-        margin-top: 0;
-        margin-bottom: 25px;
-        font-weight: 600;
+    .grid {
+      grid-template-columns: 1fr;
     }
 
-    .form-menu label {
-        font-size: 1.05rem;
-        color: #333;
-        margin-bottom: 8px;
-        display: block;
-        font-weight: 500;
+    .acciones {
+      flex-direction: column;
     }
 
-    .form-menu input {
-        width: 100%;
-        padding: 12px;
-        margin-bottom: 25px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 1rem;
-        color: #333;
-        background-color: #fafafa;
-        box-sizing: border-box; /* Evita que el input se salga del borde */
-        transition: border-color 0.3s ease, background-color 0.3s ease;
+    .boton-principal,
+    .boton-secundario-outline {
+      width: 100%;
     }
 
-    .form-menu input:focus {
-        border-color: #007BFF;
-        background-color: #fff;
-        outline: none;
+    .acciones-secundarias {
+      justify-content: center;
     }
-
-    .button-container {
-        display: flex;
-        justify-content: space-between;
-        gap: 15px;
-        margin-top: 10px;
-    }
-
-    /* Clase para que los botones ocupen la mitad cada uno */
-    .btn-mitad {
-        flex: 1;
-        padding: 12px;
-        font-size: 1.05rem;
-    }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="centrar-menu">
-    <div class="form-container-menu">
-        
-        <h1 class="titulo-menu">Crear Menú</h1>
+<div class="contenedor">
+  <div class="encabezado">
+    <h1>Crear menú semanal</h1>
+  </div>
 
-        <form class="form-menu" action="{% url 'crearMenuSemanal' %}" method="POST">
-            {% csrf_token %}
-            
-            <label for="nombre">Nombre del Menú:</label>
-            <input type="text" id="nombre" name="nombre" required placeholder="Escribe el nombre del menú">
+  {% if messages %}
+  <ul class="mensajes">
+    {% for message in messages %}
+    <li class="{{ message.tags|default:'' }}">
+      {% if message.tags == "success" %}
+      <strong>Éxito:</strong>
+      {% elif message.tags == "error" %}
+      <strong>Error:</strong>
+      {% else %}
+      <strong>Aviso:</strong>
+      {% endif %} {{ message }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
 
-            <label for="fecha_inicio">Fecha de Inicio:</label>
-            <input type="date" id="fecha_inicio" name="fecha_inicio" required>
-            
-            <label for="fecha_fin">Fecha de Fin:</label>
-            <input type="date" id="fecha_fin" name="fecha_fin" required>
+  <form action="{% url 'crearMenuSemanal' %}" method="POST">
+    {% csrf_token %}
 
-            <div class="button-container">
-                <button type="submit" class="btn primary btn-mitad">Guardar</button>
-                <button type="reset" class="btn btn-mitad">Cancelar</button>
-            </div>
-            
-        </form>
+    <section class="seccion">
+      <h2 class="seccion-titulo">Información del menú</h2>
+
+      <p class="seccion-descripcion">
+        Captura el nombre del menú semanal y define el periodo en el que estará
+        disponible.
+      </p>
+
+      <div class="grid">
+        <div class="campo campo-completo">
+          <label for="nombre">Nombre del menú</label>
+
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            required
+            placeholder="Escribe el nombre del menú"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="fecha_inicio">Fecha de inicio</label>
+
+          <input
+            type="date"
+            id="fecha_inicio"
+            name="fecha_inicio"
+            required
+          />
+        </div>
+
+        <div class="campo">
+          <label for="fecha_fin">Fecha de fin</label>
+
+          <input type="date" id="fecha_fin" name="fecha_fin" required />
+        </div>
+      </div>
+    </section>
+
+    <div class="acciones">
+      <a href="{% url 'administrar' %}" class="boton-secundario-outline">
+        Cancelar
+      </a>
+
+      <button type="submit" class="boton-principal">
+        Guardar menú
+      </button>
     </div>
+  </form>
 </div>
+
+<script>
+  setTimeout(() => {
+    document.querySelectorAll(".mensajes li").forEach((mensaje) => {
+      mensaje.classList.add("mensaje-fade");
+
+      setTimeout(() => {
+        mensaje.remove();
+      }, 400);
+    });
+  }, 4000);
+</script>
 {% endblock %}

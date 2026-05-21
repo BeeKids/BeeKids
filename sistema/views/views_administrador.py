@@ -1,35 +1,47 @@
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
+from django.db import IntegrityError
 
 from sistema.forms_usuarios import CrearUsuarioForm, EliminarUsuarioForm, ModificarUsuarioForm
-from sistema.models.models import GestorDeUsuarios, Alumno, Grupo, GestorDeGrupos, Profesor, Tutor, UsuarioEscolar
 from sistema.forms_grupos import ActualizarGrupoForm, CrearGrupoForm
-
+from sistema.models.models import (
+    GestorDeUsuarios,
+    Alumno,
+    Grupo,
+    GestorDeGrupos,
+    Profesor,
+    Tutor,
+    UsuarioEscolar,
+    Nutricionista,
+    Chef
+)
 
 def administrar(request):
     return render(request, "sistema/Vista_Administrador.html")
 
 
-def administrarGrupo(request):
-    return render(request, "sistema/Vista_AdministrarGrupos.html")
-
 
 def crearGrupo(request):
     if request.method == 'POST':
         form = CrearGrupoForm(request.POST)
+
         if form.is_valid():
             nombre = form.cleaned_data['nombre']
             alumnos = form.cleaned_data['alumnos']
 
-            if alumnos.count() == 0:
-                messages.error(request, "No se puede crear un grupo sin alumnos.")
-                return redirect('crearGrupo')
-
-            if GestorDeGrupos.crearGrupo(nombre, list(alumnos)):
+            try:
+                GestorDeGrupos.crearGrupo(nombre, list(alumnos))
                 messages.success(request, "Grupo creado con éxito.")
-                return redirect('crearGrupo')
-            else:
-                messages.error(request, "Error al crear el grupo.")
+                return redirect('listaGrupos')
+
+            except ValueError as e:
+                form.add_error(None, str(e))
+
+            except Exception as e:
+                form.add_error(
+                    None,
+                    f"Hubo un error al crear el grupo: {str(e)}"
+                )
     else:
         form = CrearGrupoForm()
 
@@ -48,28 +60,68 @@ def eliminarGrupo(request, grupoId):
 
 
 def modificarGrupo(request, grupoId):
-    grupo = get_object_or_404(Grupo, id=grupoId)
+
+    grupo = get_object_or_404(
+        Grupo,
+        id=grupoId
+    )
 
     if request.method == "POST":
-        form = ActualizarGrupoForm(request.POST, instance=grupo)
+
+        form = ActualizarGrupoForm(
+            request.POST,
+            instance=grupo
+        )
 
         if form.is_valid():
+
             nombre = form.cleaned_data['nombre']
             alumnos = form.cleaned_data['alumnos']
 
             try:
-                cambios = GestorDeGrupos.modificarGrupo(grupo_id=grupoId, nombre=nombre, alumnos=list(alumnos))
+
+                cambios = GestorDeGrupos.modificarGrupo(
+                    grupo_id=grupoId,
+                    nombre=nombre,
+                    alumnos=list(alumnos)
+                )
+
                 if cambios:
-                    messages.success(request, "Grupo actualizado con éxito.")
+                    messages.success(
+                        request,
+                        "Grupo actualizado con éxito."
+                    )
                 else:
-                    messages.info(request, "No se realizaron cambios.")
+                    messages.info(
+                        request,
+                        "No se realizaron cambios."
+                    )
+
                 return redirect('listaGrupos')
+
             except ValueError as e:
                 form.add_error(None, str(e))
-    else:
-        form = ActualizarGrupoForm(instance=grupo)
 
-    return render(request, 'sistema/Vista_ModificarGrupo.html', {'form': form, 'grupo': grupo})
+            except Exception as e:
+                form.add_error(
+                    None,
+                    f"Error al actualizar el grupo: {str(e)}"
+                )
+
+    else:
+
+        form = ActualizarGrupoForm(
+            instance=grupo
+        )
+
+    return render(
+        request,
+        'sistema/Vista_ModificarGrupo.html',
+        {
+            'form': form,
+            'grupo': grupo
+        }
+    )
 
 
 def listar_grupos(request):
@@ -137,7 +189,11 @@ def modificarUsuario(request, usuarioId, rol):
     usuario = get_object_or_404(UsuarioEscolar, id=usuarioId)
 
     if request.method == "POST":
-        actualizarUsuarioForm = ModificarUsuarioForm(request.POST, usuario=usuario, rol=rol)
+        actualizarUsuarioForm = ModificarUsuarioForm(
+            request.POST,
+            usuario=usuario,
+            rol=rol
+        )
 
         if actualizarUsuarioForm.is_valid():
             nombre = actualizarUsuarioForm.cleaned_data['nombre']
@@ -160,21 +216,56 @@ def modificarUsuario(request, usuarioId, rol):
                     grupo=grupo.id if grupo else None,
                     tutor=tutor.id if tutor else None
                 )
+
                 if cambios:
                     messages.success(request, "Usuario actualizado con éxito.")
                 else:
                     messages.error(request, "No se realizaron cambios.")
+
                 return redirect('listaUsuarios')
+
             except ValueError as e:
                 actualizarUsuarioForm.add_error(None, str(e))
-    else:
-        actualizarUsuarioForm = ModificarUsuarioForm(usuario=usuario, rol=rol)
+            except IntegrityError:
+                actualizarUsuarioForm.add_error(
+                    'username',
+                    'No se pudo actualizar el usuario porque el nombre de usuario ya existe.'
+                )
+        else:
+            messages.error(
+                request,
+                "Por favor corrige los errores en el formulario."
+            )
 
-    return render(request, 'sistema/Vista_ModificarUsuario.html', {'form': actualizarUsuarioForm, 'grupo': usuario})
+    else:
+        actualizarUsuarioForm = ModificarUsuarioForm(
+            usuario=usuario,
+            rol=rol
+        )
+
+    return render(request, 'sistema/Vista_ModificarUsuario.html', {
+        'form': actualizarUsuarioForm,
+        'grupo': usuario,
+        'rol': rol.capitalize()
+    })
 
 
 def listarUsuarios(request):
     alumnos = Alumno.objects.all()
     profesores = Profesor.objects.all()
     tutores = Tutor.objects.all()
-    return render(request, "sistema/Vista_ListaUsuarios.html", {'alumnos': alumnos, 'profesores': profesores, 'tutores': tutores})
+    nutricionistas = Nutricionista.objects.all()
+    cocineros = Chef.objects.all()
+    administradores = UsuarioEscolar.objects.filter(
+        is_staff=True,
+        is_superuser=True
+    )
+
+    return render(request, "sistema/Vista_ListaUsuarios.html", {
+        'alumnos': alumnos,
+        'profesores': profesores,
+        'tutores': tutores,
+        'nutricionistas': nutricionistas,
+        'cocineros': cocineros,
+        'administradores': administradores
+    })

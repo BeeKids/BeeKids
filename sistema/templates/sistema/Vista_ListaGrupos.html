@@ -1,175 +1,376 @@
-{% extends 'sistema/base.html' %} {% block title %}Lista de Actividades | BeeKids{% endblock %}
+{% extends 'sistema/base.html' %}
+
+{% block title %}Lista de Grupos | BeeKids{% endblock %}
 
 {% block extra_css %}
+<style>
+  * {
+    box-sizing: border-box;
+  }
 
-    <style>
-        /* Reutilizamos el estilo existente */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f4f8;
-        }
-        h1 {
-        text-align: center;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 20px auto;
-            max-width: 700px;
-        }
-        li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            margin-bottom: 10px;
-            background-color: white;
-            border-left: 5px solid #3a7bd5;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        li a {
-            color: #3a7bd5;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 1.1rem;
-        }
-        li a:hover {
-            text-decoration: underline;
-        }
-        .acciones-grupo {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .boton-eliminar {
-            background-color: #e74c3c;
-            color: white;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .boton-eliminar:hover {
-            background-color: #c0392b;
-        }
-        .boton-agregar-grupo {
-            margin: 20px auto;
-            display: block;
-            text-align: center;
-        }
-        .boton-agregar-grupo a {
-            padding: 12px 20px;
-            background-color: #3a7bd5;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .boton-agregar-grupo a:hover {
-            background-color: #2f6aba;
-        }
-        .no-grupos {
-            text-align: center;
-            color: #777;
-            font-style: italic;
-            padding: 15px;
-            background-color: #f4f4f4;
-            border-radius: 5px;
-        }
+  .pagina-grupos {
+    font-family: "Poppins", sans-serif;
+    background-color: #f4f6f9;
+    padding: 30px 15px;
+    color: #333333;
+  }
 
-        .alumnos h3{
-            color: blue;
-        }
-    </style>
+  .contenedor {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+  }
 
-{% endblock %}
+  .encabezado {
+    text-align: center;
+    margin-bottom: 24px;
+  }
 
-{% block extra_js %}
+  h1 {
+    font-size: 34px;
+    margin: 0 0 18px 0;
+    font-weight: 700;
+    color: #333333;
+  }
 
-    <script>
-        function confirmarEliminacion(event) {
-            if (!confirm("¿Estás seguro de que deseas eliminar este grupo?")) {
-                event.preventDefault(); // Prevenir la acción de eliminar si no se confirma
-            }
-        }
-    </script>
+  .boton-agregar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 22px;
+    background-color: #3498db;
+    color: #ffffff;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+  }
 
+  .boton-agregar:hover {
+    background-color: #2980b9;
+  }
+
+  .mensajes {
+    margin: 0 0 22px 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mensajes li {
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .mensajes .success {
+    background-color: #eafaf1;
+    color: #27ae60;
+    border: 1px solid #a3e4d7;
+  }
+
+  .mensajes .error {
+    background-color: #fdecea;
+    color: #c0392b;
+    border: 1px solid #f5b7b1;
+  }
+
+  .mensaje-oculto {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition:
+      opacity 0.5s ease,
+      transform 0.5s ease;
+  }
+
+  .lista-grupos {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .tarjeta-grupo {
+    background-color: #ffffff;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e4e8ed;
+    overflow: hidden;
+  }
+
+  .grupo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 22px 24px;
+    border-left: 5px solid #3498db;
+  }
+
+  .grupo-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .grupo-nombre {
+    font-size: 21px;
+    font-weight: 700;
+    color: #333333;
+    margin: 0;
+    text-decoration: none;
+  }
+
+  .grupo-contador {
+    font-size: 14px;
+    color: #666666;
+    margin: 0;
+  }
+
+  .acciones-grupo {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .boton-editar,
+  .boton-eliminar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+  }
+
+  .boton-editar {
+    background-color: #f39c12;
+    color: #ffffff;
+  }
+
+  .boton-editar:hover {
+    background-color: #d68910;
+  }
+
+  .boton-eliminar {
+    background-color: #e74c3c;
+    color: #ffffff;
+  }
+
+  .boton-eliminar:hover {
+    background-color: #c0392b;
+  }
+
+  .alumnos {
+    padding: 0 24px 24px 24px;
+  }
+
+  .alumnos-titulo {
+    font-size: 16px;
+    font-weight: 700;
+    color: #333333;
+    margin: 0 0 12px 0;
+  }
+
+  .lista-alumnos {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .lista-alumnos li {
+    background-color: #f8fafc;
+    border: 1px solid #e4e8ed;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 15px;
+    color: #333333;
+  }
+
+  .sin-alumnos {
+    background-color: #f8fafc;
+    border: 1px solid #e4e8ed;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 14px;
+    color: #666666;
+    margin: 0;
+  }
+
+  .no-grupos {
+    background-color: #ffffff;
+    border: 1px solid #e4e8ed;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    color: #666666;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  form {
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .pagina-grupos {
+      padding: 24px 12px;
+    }
+
+    h1 {
+      font-size: 28px;
+    }
+
+    .grupo-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .acciones-grupo {
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .boton-editar,
+    .boton-eliminar,
+    .acciones-grupo form {
+      width: 100%;
+    }
+
+    .lista-alumnos {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
+<div class="pagina-grupos">
+  <main class="contenedor">
+    <div class="encabezado">
+      <h1>Lista de grupos</h1>
 
-<body>
-    <h1>Lista de Grupos</h1>
-
-    <div>
-        {% if messages %}
-            <ul class="mensajes">
-                {% for message in messages %}
-                    <li class="{% if message.tags %}{{ message.tags }}{% endif %}">
-                        {{ message }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+      {% if not es_tutor %}
+      <a class="boton-agregar" href="{% url 'crearGrupo' %}">
+        Crear nuevo grupo
+      </a>
+      {% endif %}
     </div>
 
-    <div class="boton-agregar-grupo">
-        {% if not es_tutor %}
-        <a href="{% url 'crearGrupo' %}">Agregar Grupo</a>
-        {% endif %}
-    </div>
-
-    <ul>
-        {% if grupos %}
-            {% for grupo in grupos %}
-            <li>
-                {% if es_tutor %}
-                    <a href="{% url 'registroDeAsistencia_tutor' grupo.id %}">
-                        {{ grupo.nombre }}
-                    </a>
-                {% else %}
-                    <a href="#">
-                        {{ grupo.nombre }}
-                    </a>
-                {% endif %}
-
-                <div class="acciones-actividad">
-                    {% if not es_tutor %}
-                    <form action="{% url 'eliminarGrupo' grupo.id %}" method="POST" style="margin: 0;" onsubmit="confirmarEliminacion(event)">
-                        {% csrf_token %}
-                        <button type="submit" class="boton-eliminar">Eliminar</button>
-                    </form>
-                    <a href="{% url 'modificarGrupo' grupo.id%}" class="boton-editar">
-                        <button class="boton-eliminar" style="background-color: #3498db;">Editar</button>
-                    </a>
-                    {% endif %}
-                </div>
-            </li>
-
-            <div class="alumnos">
-
-                <h3>Lista Alumnos</h3>
-
-                <ul>
-                    {% for alumno in grupo.alumnos.all %}
-                        <li>{{ alumno.first_name }}</li>
-                    {% endfor %}
-                </ul>
-
-            </div>
-
-            {% endfor %}
-        {% else %}
-            <li class="no-grupos">No hay grupos registrados.</li>
-        {% endif %}
+    {% if messages %}
+    <ul class="mensajes" id="contenedor-mensajes">
+      {% for message in messages %}
+      <li class="{% if message.tags %}{{ message.tags }}{% endif %}">
+        {{ message }}
+      </li>
+      {% endfor %}
     </ul>
+    {% endif %}
+
+    <section class="lista-grupos">
+      {% if grupos %}
+      {% for grupo in grupos %}
+      <article class="tarjeta-grupo">
+        <div class="grupo-header">
+          <div class="grupo-info">
+            {% if es_tutor %}
+            <a
+              class="grupo-nombre"
+              href="{% url 'registroDeAsistencia_tutor' grupo.id %}"
+            >
+              {{ grupo.nombre }}
+            </a>
+            {% else %}
+            <p class="grupo-nombre">{{ grupo.nombre }}</p>
+            {% endif %}
+
+            <p class="grupo-contador">
+              {{ grupo.alumnos.all|length }} alumno(s) asignado(s)
+            </p>
+          </div>
+
+          {% if not es_tutor %}
+          <div class="acciones-grupo">
+            <a
+              href="{% url 'modificarGrupo' grupo.id %}"
+              class="boton-editar"
+            >
+              Editar
+            </a>
+
+            <form
+              action="{% url 'eliminarGrupo' grupo.id %}"
+              method="POST"
+              onsubmit="confirmarEliminacion(event)"
+            >
+              {% csrf_token %}
+              <button type="submit" class="boton-eliminar">
+                Eliminar
+              </button>
+            </form>
+          </div>
+          {% endif %}
+        </div>
+
+        <div class="alumnos">
+          <h2 class="alumnos-titulo">Alumnos del grupo</h2>
+
+          {% if grupo.alumnos.all %}
+          <ul class="lista-alumnos">
+            {% for alumno in grupo.alumnos.all %}
+            <li>{{ alumno.getNombre }}</li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p class="sin-alumnos">
+            Este grupo todavía no tiene alumnos asignados.
+          </p>
+          {% endif %}
+        </div>
+      </article>
+      {% endfor %}
+      {% else %}
+      <div class="no-grupos">
+        No hay grupos registrados.
+      </div>
+      {% endif %}
+    </section>
+  </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function confirmarEliminacion(event) {
+    if (!confirm("¿Estás seguro de que deseas eliminar este grupo?")) {
+      event.preventDefault();
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const contenedorMensajes = document.getElementById(
+      "contenedor-mensajes"
+    );
+
+    if (!contenedorMensajes) {
+      return;
+    }
+
+    setTimeout(function () {
+      contenedorMensajes.classList.add("mensaje-oculto");
+    }, 3000);
+
+    setTimeout(function () {
+      contenedorMensajes.remove();
+    }, 3600);
+  });
+</script>
 {% endblock %}

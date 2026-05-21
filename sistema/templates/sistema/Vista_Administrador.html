@@ -1,6 +1,5 @@
-{% extends 'sistema/base.html' %} {% block title %}Panel de Administración | BeeKids{% endblock %}
-
-{% block extra_css %}
+{% extends 'sistema/base.html' %} {% block title %}Panel de Administración |
+BeeKids{% endblock %} {% block extra_css %}
 <style>
   .grid {
     display: grid;
@@ -17,17 +16,33 @@
   }
 
   @media (min-width: 820px) {
-    .card.half { grid-column: span 6; }
-    .card.third { grid-column: span 4; }
+    .card.half {
+      grid-column: span 6;
+    }
+
+    .card.third {
+      grid-column: span 4;
+    }
   }
 
-  .card h2 { margin: 0 0 8px; font-size: 1.1rem; }
-  .card p { margin: 0 0 14px; font-size: 0.9rem; color: #6b7280; }
-  .row { display: flex; gap: 10px; flex-wrap: wrap; }
-</style>
-{% endblock %}
+  .card h2 {
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+  }
 
-{% block content %}
+  .card p {
+    margin: 0 0 14px;
+    font-size: 0.9rem;
+    color: #6b7280;
+  }
+
+  .row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+</style>
+{% endblock %} {% block content %}
 <div class="grid">
   <section class="card half">
     <h2>Grupos</h2>
@@ -42,7 +57,9 @@
     <h2>Usuarios</h2>
     <p>Alta, listado y administración de cuentas.</p>
     <div class="row">
-      <a class="btn primary" href="{% url 'listaUsuarios' %}">Lista de usuarios</a>
+      <a class="btn primary" href="{% url 'listaUsuarios' %}"
+        >Lista de usuarios</a
+      >
       <a class="btn" href="{% url 'crearUsuario' %}">Crear usuario</a>
     </div>
   </section>
@@ -51,7 +68,9 @@
     <h2>Actividades</h2>
     <p>Gestiona actividades y consulta detalles.</p>
     <div class="row">
-      <a class="btn primary" href="{% url 'listaActividades' %}">Lista de actividades</a>
+      <a class="btn primary" href="{% url 'listaActividades' %}"
+        >Lista de actividades</a
+      >
       <a class="btn" href="{% url 'crearActividad' %}">Crear actividad</a>
     </div>
   </section>
@@ -60,17 +79,21 @@
     <h2>Horarios</h2>
     <p>Alta y listado de horarios.</p>
     <div class="row">
-      <a class="btn primary" href="{% url 'listaHorarios' %}">Lista de horarios</a>
+      <a class="btn primary" href="{% url 'listaHorarios' %}"
+        >Lista de horarios</a
+      >
       <a class="btn" href="{% url 'crearHorario' %}">Crear horario</a>
     </div>
   </section>
 
   <section class="card third">
     <h2>Cocina</h2>
-    <p>Gestión de menús y platilos.</p>
+    <p>Gestión de menús y platillos.</p>
     <div class="row">
-      <a class="btn primary" href="{% url 'seleccionarMenuSemanal' %}">Seleccionar menú</a>
-      <a class="btn" href="{% url 'gestionarRecomendaciones' %}">Crear platillo</a>
+      <a class="btn primary" href="{% url 'seleccionarMenuSemanal' %}"
+        >Seleccionar menú</a
+      >
+      <a class="btn" href="{% url 'crearRecomendacion' %}">Crear platillo</a>
       <a class="btn" href="{% url 'crearMenuSemanal' %}">Crear menú</a>
     </div>
   </section>
@@ -87,7 +110,9 @@
     <h2>Reportes</h2>
     <p>Explora reportes disponibles y genera PDFs.</p>
     <div class="row">
-      <a class="btn primary" href="{% url 'reportes_disponibles' %}">Generar reporte</a>
+      <a class="btn primary" href="{% url 'reportes_disponibles' %}"
+        >Generar reporte</a
+      >
     </div>
   </section>
 </div>

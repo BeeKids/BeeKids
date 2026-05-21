@@ -1,202 +1,476 @@
-{% extends 'sistema/base.html' %} {% block title %}Lista de Actividades | BeeKids{% endblock %}
+{% extends 'sistema/base.html' %}
+
+{% block title %}Lista de Usuarios | BeeKids{% endblock %}
 
 {% block extra_css %}
-    <style>
-        /* Reutilizamos el estilo existente */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f4f8;
-        }
-        h1 {
-        text-align: center;
-        }
-        ul {
-            list-style: none;
-            padding: 0;
-            margin: 20px auto;
-            max-width: 700px;
-        }
-        li {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px;
-            margin-bottom: 10px;
-            background-color: white;
-            border-left: 5px solid #3a7bd5;
-            border-radius: 5px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-        li a {
-            color: #3a7bd5;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 1.1rem;
-        }
-        li a:hover {
-            text-decoration: underline;
-        }
-        .acciones-grupo {
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        .boton-eliminar {
-            background-color: #e74c3c;
-            color: white;
-            padding: 8px 12px;
-            border: none;
-            border-radius: 5px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .boton-eliminar:hover {
-            background-color: #c0392b;
-        }
-        .boton-agregar-grupo {
-            margin: 20px auto;
-            display: block;
-            text-align: center;
-        }
-        .boton-agregar-grupo a {
-            padding: 12px 20px;
-            background-color: #3a7bd5;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: bold;
-            text-decoration: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .boton-agregar-grupo a:hover {
-            background-color: #2f6aba;
-        }
-        .no-grupos {
-            text-align: center;
-            color: #777;
-            font-style: italic;
-            padding: 15px;
-            background-color: #f4f4f4;
-            border-radius: 5px;
-        }
+<style>
+  * {
+    box-sizing: border-box;
+  }
 
-        .alumnos h3{
-            color: blue;
-        }
-    </style>
+  .pagina-usuarios {
+    font-family: "Poppins", sans-serif;
+    background-color: #f4f6f9;
+    padding: 30px 15px;
+    color: #333333;
+  }
 
-    {% endblock %}
+  .contenedor {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
 
-    {% block extra_js %}
+  .encabezado {
+    text-align: center;
+    margin-bottom: 24px;
+  }
 
-    <script>
-        function confirmarEliminacion(event) {
-            if (!confirm("¿Estás seguro de que deseas eliminar este usuario?")) {
-                event.preventDefault(); // Prevenir la acción de eliminar si no se confirma
-            }
-        }
-    </script>
+  h1 {
+    font-size: 34px;
+    margin: 0 0 18px 0;
+    font-weight: 700;
+    color: #333333;
+  }
 
-    {% endblock %}
-    
-    {% block content %}
+  .boton-agregar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 22px;
+    background-color: #3498db;
+    color: #ffffff;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+  }
 
-</head>
-<body>
-    <h1>Lista de Usuarios</h1>
-    <div>
-        {% if messages %}
-            <ul class="mensajes">
-                {% for message in messages %}
-                    <li class="{% if message.tags %}{{ message.tags }}{% endif %}">
-                        {{ message }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+  .boton-agregar:hover {
+    background-color: #2980b9;
+  }
+
+  .mensajes {
+    margin: 0 0 22px 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mensajes li {
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  .mensajes .success {
+    background-color: #eafaf1;
+    color: #27ae60;
+    border: 1px solid #a3e4d7;
+  }
+
+  .mensajes .error {
+    background-color: #fdecea;
+    color: #c0392b;
+    border: 1px solid #f5b7b1;
+  }
+
+  .secciones {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .seccion-usuarios {
+    background-color: #ffffff;
+    border: 1px solid #e4e8ed;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+  }
+
+  .seccion-header {
+    padding: 20px 24px;
+    border-left: 5px solid #3498db;
+    border-bottom: 1px solid #e4e8ed;
+  }
+
+  .seccion-header h2 {
+    margin: 0;
+    font-size: 22px;
+    color: #333333;
+  }
+
+  .lista-usuarios {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .usuario-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 24px;
+    border-bottom: 1px solid #edf0f3;
+  }
+
+  .usuario-item:last-child {
+    border-bottom: none;
+  }
+
+  .usuario-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+
+  .usuario-nombre {
+    font-size: 17px;
+    font-weight: 700;
+    color: #333333;
+    margin: 0;
+  }
+
+  .usuario-detalle {
+    font-size: 14px;
+    color: #666666;
+    margin: 0;
+    word-break: break-word;
+  }
+
+  .acciones-usuario {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .boton-editar,
+  .boton-eliminar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+  }
+
+  .boton-editar {
+    background-color: #f39c12;
+    color: #ffffff;
+  }
+
+  .boton-editar:hover {
+    background-color: #d68910;
+  }
+
+  .boton-eliminar {
+    background-color: #e74c3c;
+    color: #ffffff;
+  }
+
+  .boton-eliminar:hover {
+    background-color: #c0392b;
+  }
+
+  .sin-registros {
+    padding: 18px 24px;
+    color: #666666;
+    font-size: 14px;
+    background-color: #f8fafc;
+    margin: 0;
+  }
+
+  form {
+    margin: 0;
+  }
+
+  @media (max-width: 768px) {
+    .pagina-usuarios {
+      padding: 24px 12px;
+    }
+
+    h1 {
+      font-size: 28px;
+    }
+
+    .usuario-item {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .acciones-usuario {
+      width: 100%;
+      flex-direction: column;
+    }
+
+    .acciones-usuario form,
+    .boton-editar,
+    .boton-eliminar {
+      width: 100%;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="pagina-usuarios">
+  <main class="contenedor">
+    <div class="encabezado">
+      <h1>Lista de usuarios</h1>
+      <a class="boton-agregar" href="{% url 'crearUsuario' %}">
+        Crear nuevo usuario
+      </a>
     </div>
 
-    <div class="boton-agregar-grupo">
-        <a href="{% url 'crearUsuario' %}">Agregar Usuario</a>
-    </div>
+    {% if messages %}
+    <ul class="mensajes">
+      {% for message in messages %}
+      <li class="{% if message.tags %}{{ message.tags }}{% endif %}">
+        {{ message }}
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
 
-    <ul>
-        <h2>Alumnos<h2>
+    <section class="secciones">
+      <article class="seccion-usuarios">
+        <div class="seccion-header">
+          <h2>Alumnos</h2>
+        </div>
+
         {% if alumnos %}
-            {% for alumno in alumnos %}
-            <li>
-                <a href="#">
-                    {{ alumno.first_name }} {{ alumno.last_name }}
-                </a>
-                <div class="acciones-actividad">
-                    <form action="{% url 'eliminarUsuario' alumno.id %}" method="POST" style="margin: 0;" onsubmit="confirmarEliminacion(event)">
-                        {% csrf_token %}
-                        <button type="submit" class="boton-eliminar">Eliminar</button>
-                    </form>
-                    <a href="{% url 'modificarUsuario' alumno.id 'alumno'%}" class="boton-editar">
-                        <button class="boton-eliminar" style="background-color: #3498db;">Editar</button>
-                    </a>
-                </div>
-            </li>
-            {% endfor %}
-        {% else %}
-            <li class="no-grupos">No hay alumnos registrados.</li>
-        {% endif %}
-        
-    </ul>
+        <ul class="lista-usuarios">
+          {% for alumno in alumnos %}
+          <li class="usuario-item">
+            <div class="usuario-info">
+              <p class="usuario-nombre">
+                {{ alumno.first_name }} {{ alumno.last_name }}
+              </p>
+              <p class="usuario-detalle">Usuario: {{ alumno.username }}</p>
+            </div>
 
-    <ul>
-        <h2>Tutores<h2>
+            <div class="acciones-usuario">
+              <a href="{% url 'modificarUsuario' alumno.id 'alumno' %}" class="boton-editar">
+                Editar
+              </a>
+
+              <form action="{% url 'eliminarUsuario' alumno.id %}" method="POST" onsubmit="confirmarEliminacion(event)">
+                {% csrf_token %}
+                <button type="submit" class="boton-eliminar">Eliminar</button>
+              </form>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="sin-registros">No hay alumnos registrados.</p>
+        {% endif %}
+      </article>
+
+      <article class="seccion-usuarios">
+        <div class="seccion-header">
+          <h2>Tutores</h2>
+        </div>
+
         {% if tutores %}
-            {% for tutor in tutores %}
-            <li>
-                <a href="#">
-                    {{ tutor.first_name }} {{ tutor.last_name }}
-                </a>
-                <div class="acciones-actividad">
-                    <form action="{% url 'eliminarUsuario' tutor.id %}" method="POST" style="margin: 0;" onsubmit="confirmarEliminacion(event)">
-                        {% csrf_token %}
-                        <button type="submit" class="boton-eliminar">Eliminar</button>
-                    </form>
-                    <a href="{% url 'modificarUsuario' tutor.id 'tutor'%}" class="boton-editar">
-                        <button class="boton-eliminar" style="background-color: #3498db;">Editar</button>
-                    </a>
-                </div>
-            </li>
-            {% endfor %}
+        <ul class="lista-usuarios">
+          {% for tutor in tutores %}
+          <li class="usuario-item">
+            <div class="usuario-info">
+              <p class="usuario-nombre">
+                {{ tutor.first_name }} {{ tutor.last_name }}
+              </p>
+              <p class="usuario-detalle">Usuario: {{ tutor.username }}</p>
+              {% if tutor.email %}
+              <p class="usuario-detalle">Correo: {{ tutor.email }}</p>
+              {% endif %}
+            </div>
+
+            <div class="acciones-usuario">
+              <a href="{% url 'modificarUsuario' tutor.id 'tutor' %}" class="boton-editar">
+                Editar
+              </a>
+
+              <form action="{% url 'eliminarUsuario' tutor.id %}" method="POST" onsubmit="confirmarEliminacion(event)">
+                {% csrf_token %}
+                <button type="submit" class="boton-eliminar">Eliminar</button>
+              </form>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
         {% else %}
-            <li class="no-grupos">No hay grupos registrados.</li>
+        <p class="sin-registros">No hay tutores registrados.</p>
         {% endif %}
-    </ul>
+      </article>
 
+      <article class="seccion-usuarios">
+        <div class="seccion-header">
+          <h2>Profesores</h2>
+        </div>
 
-    <ul>
-        <h2>Profesores<h2>
         {% if profesores %}
-            {% for profesor in profesores %}
-            <li>
-                <a href="#">
-                    {{ profesor.first_name }} {{ profesor.last_name }}
-                </a>
-                <div class="acciones-actividad">
-                    <form action="{% url 'eliminarUsuario' profesor.id %}" method="POST" style="margin: 0;" onsubmit="confirmarEliminacion(event)">
-                        {% csrf_token %}
-                        <button type="submit" class="boton-eliminar">Eliminar</button>
-                    </form>
-                    <a href="{% url 'modificarUsuario' profesor.id 'profesor'%}" class="boton-editar">
-                        <button class="boton-eliminar" style="background-color: #3498db;">Editar</button>
-                    </a>
-                </div>
-            </li>
-            {% endfor %}
-        {% else %}
-            <li class="no-grupos">No hay grupos registrados.</li>
-        {% endif %}
-    </ul>
+        <ul class="lista-usuarios">
+          {% for profesor in profesores %}
+          <li class="usuario-item">
+            <div class="usuario-info">
+              <p class="usuario-nombre">
+                {{ profesor.first_name }} {{ profesor.last_name }}
+              </p>
+              <p class="usuario-detalle">Usuario: {{ profesor.username }}</p>
+              {% if profesor.email %}
+              <p class="usuario-detalle">Correo: {{ profesor.email }}</p>
+              {% endif %}
+            </div>
 
+            <div class="acciones-usuario">
+              <a href="{% url 'modificarUsuario' profesor.id 'profesor' %}" class="boton-editar">
+                Editar
+              </a>
+
+              <form action="{% url 'eliminarUsuario' profesor.id %}" method="POST" onsubmit="confirmarEliminacion(event)">
+                {% csrf_token %}
+                <button type="submit" class="boton-eliminar">Eliminar</button>
+              </form>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="sin-registros">No hay profesores registrados.</p>
+        {% endif %}
+      </article>
+
+      <article class="seccion-usuarios">
+        <div class="seccion-header">
+          <h2>Nutricionistas</h2>
+        </div>
+
+        {% if nutricionistas %}
+        <ul class="lista-usuarios">
+          {% for nutricionista in nutricionistas %}
+          <li class="usuario-item">
+            <div class="usuario-info">
+              <p class="usuario-nombre">
+                {{ nutricionista.first_name }} {{ nutricionista.last_name }}
+              </p>
+              <p class="usuario-detalle">Usuario: {{ nutricionista.username }}</p>
+              {% if nutricionista.email %}
+              <p class="usuario-detalle">Correo: {{ nutricionista.email }}</p>
+              {% endif %}
+            </div>
+
+            <div class="acciones-usuario">
+              <a href="{% url 'modificarUsuario' nutricionista.id 'nutricionista' %}" class="boton-editar">
+                Editar
+              </a>
+
+              <form action="{% url 'eliminarUsuario' nutricionista.id %}" method="POST" onsubmit="confirmarEliminacion(event)">
+                {% csrf_token %}
+                <button type="submit" class="boton-eliminar">Eliminar</button>
+              </form>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="sin-registros">No hay nutricionistas registrados.</p>
+        {% endif %}
+      </article>
+
+      <article class="seccion-usuarios">
+        <div class="seccion-header">
+          <h2>Cocineros</h2>
+        </div>
+
+        {% if cocineros %}
+        <ul class="lista-usuarios">
+          {% for cocinero in cocineros %}
+          <li class="usuario-item">
+            <div class="usuario-info">
+              <p class="usuario-nombre">
+                {{ cocinero.first_name }} {{ cocinero.last_name }}
+              </p>
+              <p class="usuario-detalle">Usuario: {{ cocinero.username }}</p>
+              {% if cocinero.email %}
+              <p class="usuario-detalle">Correo: {{ cocinero.email }}</p>
+              {% endif %}
+            </div>
+
+            <div class="acciones-usuario">
+              <a href="{% url 'modificarUsuario' cocinero.id 'cocinero' %}" class="boton-editar">
+                Editar
+              </a>
+
+              <form action="{% url 'eliminarUsuario' cocinero.id %}" method="POST" onsubmit="confirmarEliminacion(event)">
+                {% csrf_token %}
+                <button type="submit" class="boton-eliminar">Eliminar</button>
+              </form>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="sin-registros">No hay cocineros registrados.</p>
+        {% endif %}
+      </article>
+
+      <article class="seccion-usuarios">
+        <div class="seccion-header">
+          <h2>Administradores</h2>
+        </div>
+
+        {% if administradores %}
+        <ul class="lista-usuarios">
+          {% for administrador in administradores %}
+          <li class="usuario-item">
+            <div class="usuario-info">
+              <p class="usuario-nombre">
+                {{ administrador.first_name }} {{ administrador.last_name }}
+              </p>
+              <p class="usuario-detalle">Usuario: {{ administrador.username }}</p>
+              {% if administrador.email %}
+              <p class="usuario-detalle">Correo: {{ administrador.email }}</p>
+              {% endif %}
+            </div>
+
+            <div class="acciones-usuario">
+              <a href="{% url 'modificarUsuario' administrador.id 'administrador' %}" class="boton-editar">
+                Editar
+              </a>
+
+              <form action="{% url 'eliminarUsuario' administrador.id %}" method="POST" onsubmit="confirmarEliminacion(event)">
+                {% csrf_token %}
+                <button type="submit" class="boton-eliminar">Eliminar</button>
+              </form>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        {% else %}
+        <p class="sin-registros">No hay administradores registrados.</p>
+        {% endif %}
+      </article>
+    </section>
+  </main>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  function confirmarEliminacion(event) {
+    if (!confirm("¿Estás seguro de que deseas eliminar este usuario?")) {
+      event.preventDefault();
+    }
+  }
+</script>
 {% endblock %}

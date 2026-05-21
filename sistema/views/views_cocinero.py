@@ -5,7 +5,6 @@ from sistema.models.models import Nutricionista, Chef, Platillo, MenuSemanal
 
 @login_required
 def vista_cocinero(request):
-    # En tu models.py la clase se llama 'Chef'
     if not hasattr(request.user, 'chef'):
         raise PermissionDenied
     

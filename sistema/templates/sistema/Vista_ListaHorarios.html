@@ -1,168 +1,327 @@
-{% extends 'sistema/base.html' %} {% block title %}Lista de Horarios | BeeKids{% endblock %}
+{% extends 'sistema/base.html' %}
+
+{% block title %}Lista de Horarios | BeeKids{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Contenedor principal para centrar la tabla */
-    .contenedor-horarios {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding-top: 10px;
+  :root {
+    --color-fondo: #f4f6f9;
+    --color-tarjeta: #ffffff;
+    --color-texto: #333333;
+    --color-texto-secundario: #666666;
+    --color-borde: #d7dbe0;
+
+    --color-primario: #3498db;
+    --color-primario-hover: #2980b9;
+
+    --color-eliminar: #c0392b;
+    --color-eliminar-hover: #a93226;
+
+    --color-exito: #27ae60;
+    --color-exito-fondo: #eafaf1;
+    --color-exito-borde: #a3e4d7;
+
+    --color-error: #c0392b;
+    --color-error-fondo: #fdecea;
+    --color-error-borde: #f5b7b1;
+
+    --sombra: 0 6px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .contenedor {
+    width: 100%;
+    max-width: 980px;
+    margin: 0 auto;
+    background-color: var(--color-tarjeta);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: var(--sombra);
+  }
+
+  .encabezado {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  h1 {
+    font-size: 34px;
+    margin: 0;
+    font-weight: bold;
+    color: var(--color-texto);
+  }
+
+  .mensajes {
+    margin: 0 0 22px 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mensajes li {
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease;
+  }
+
+  .mensajes .error {
+    background-color: var(--color-error-fondo);
+    color: var(--color-error);
+    border: 1px solid var(--color-error-borde);
+  }
+
+  .mensajes .exito {
+    background-color: var(--color-exito-fondo);
+    color: var(--color-exito);
+    border: 1px solid var(--color-exito-borde);
+  }
+
+  .mensaje-fade {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  .acciones-superiores {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 22px;
+  }
+
+  .seccion {
+    border: 1px solid #e4e8ed;
+    border-radius: 14px;
+    padding: 24px;
+    background-color: #ffffff;
+  }
+
+  .seccion-titulo {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 20px 0;
+  }
+
+  .tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead {
+    background-color: #f8fafc;
+  }
+
+  th,
+  td {
+    padding: 15px;
+    text-align: center;
+    border-bottom: 1px solid #e4e8ed;
+    font-size: 15px;
+  }
+
+  th {
+    color: #444444;
+    font-weight: 700;
+  }
+
+  td {
+    color: var(--color-texto);
+  }
+
+  .acciones-tabla {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .boton-principal,
+  .boton-eliminar {
+    padding: 13px 20px;
+    min-height: 46px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    font-family: "Poppins", sans-serif;
+  }
+
+  .boton-principal {
+    background-color: var(--color-primario);
+    color: #ffffff;
+  }
+
+  .boton-principal:hover {
+    background-color: var(--color-primario-hover);
+  }
+
+  .boton-eliminar {
+    background-color: var(--color-eliminar);
+    color: #ffffff;
+  }
+
+  .boton-eliminar:hover {
+    background-color: var(--color-eliminar-hover);
+  }
+
+  .fila-vacia {
+    text-align: center;
+    color: var(--color-texto-secundario);
+    font-style: italic;
+    padding: 18px;
+  }
+
+  @media (max-width: 768px) {
+    .contenedor {
+      padding: 24px 20px;
     }
 
-    /* Clase específica para el título y no afectar al Navbar */
-    .titulo-horarios {
-        font-size: 32px;
-        margin-bottom: 25px;
-        font-weight: bold;
-        color: #2c3e50;
-        text-align: center;
+    h1 {
+      font-size: 28px;
     }
 
-    /* Estilos para las alertas/mensajes */
-    .mensajes-alert {
-        margin-bottom: 20px;
-        padding: 15px;
-        border-radius: 8px;
-        width: 100%;
-        font-size: 16px;
+    .acciones-superiores {
+      flex-direction: column;
     }
 
-    .mensajes-alert.exito {
-        background-color: #eafaf1;
-        color: #27ae60;
-        border: 1px solid #a3e4d7;
+    .boton-principal,
+    .boton-eliminar {
+      width: 100%;
     }
 
-    .mensajes-alert.error {
-        background-color: #fdecea;
-        color: #c0392b;
-        border: 1px solid #f5b7b1;
+    th,
+    td {
+      padding: 12px;
     }
-
-    /* Estilos de la tabla */
-    .tabla-horarios {
-        width: 100%;
-        max-width: 800px;
-        border-collapse: collapse;
-        background-color: #ffffff;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra estándar del sistema */
-        margin-bottom: 25px;
-        border-radius: 12px;
-        overflow: hidden;
-    }
-
-    .tabla-horarios th, .tabla-horarios td {
-        padding: 15px;
-        text-align: center;
-    }
-
-    .tabla-horarios th {
-        background-color: #3498db;
-        color: white;
-        font-weight: 600;
-    }
-
-    .tabla-horarios tr:nth-child(even) {
-        background-color: #f9fafb;
-    }
-
-    .tabla-horarios td:last-child {
-        border-bottom: none;
-    }
-
-    .fila-vacia {
-        text-align: center;
-        color: #7f8c8d;
-        font-style: italic;
-    }
-
-    /* Botón verde personalizado para esta vista */
-    .btn-verde {
-        background-color: #27ae60;
-        color: white;
-    }
-    .btn-verde:hover {
-        background-color: #219150;
-    }
+  }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="contenedor">
+  <div class="encabezado">
+    <h1>Lista de horarios</h1>
+  </div>
+
+  {% if messages %}
+  <ul class="mensajes" id="lista-mensajes">
+    {% for message in messages %}
+    <li
+      class="{% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}exito{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}error{% endif %}"
+    >
+      {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+      <strong>Éxito:</strong>
+      {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+      <strong>Error:</strong>
+      {% else %}
+      <strong>Aviso:</strong>
+      {% endif %}
+
+      {{ message }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  {% if not es_tutor %}
+  <div class="acciones-superiores">
+    <a href="{% url 'crearHorario' %}" class="boton-principal">
+      Crear nuevo horario
+    </a>
+  </div>
+  {% endif %}
+
+  <section class="seccion">
+    <h2 class="seccion-titulo">Horarios registrados</h2>
+
+    <div class="tabla-contenedor">
+      <table>
+        <thead>
+          <tr>
+            <th>Fecha</th>
+            <th>Hora de entrada</th>
+            <th>Hora de salida</th>
+
+            {% if not es_tutor %}
+            <th>Acciones</th>
+            {% endif %}
+          </tr>
+        </thead>
+
+        <tbody>
+          {% for horario in horarios %}
+          <tr>
+            <td>{{ horario.fecha }}</td>
+            <td>{{ horario.horaEntrada }}</td>
+            <td>{{ horario.horaSalida }}</td>
+
+            {% if not es_tutor %}
+            <td>
+              <div class="acciones-tabla">
+                <form
+                  method="POST"
+                  action="{% url 'eliminarHorario' horario.id %}"
+                  onsubmit="confirmarEliminacion(event)"
+                >
+                  {% csrf_token %}
+
+                  <button type="submit" class="boton-eliminar">
+                    Eliminar
+                  </button>
+                </form>
+              </div>
+            </td>
+            {% endif %}
+          </tr>
+
+          {% empty %}
+          <tr>
+            <td
+              colspan="{% if not es_tutor %}4{% else %}3{% endif %}"
+              class="fila-vacia"
+            >
+              No hay horarios disponibles.
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    // Función para confirmar eliminación
-    function confirmarEliminacion(event) {
-        if (!confirm("¿Estás seguro de que deseas eliminar este horario?")) {
-            event.preventDefault(); 
-        }
+  function confirmarEliminacion(event) {
+    if (!confirm("¿Estás seguro de que deseas eliminar este horario?")) {
+      event.preventDefault();
     }
+  }
 
-    // Se eliminan mensajes después de 2 segundos
-    document.addEventListener("DOMContentLoaded", function () {
-        const mensajes = document.querySelectorAll('.mensajes-alert');
-        mensajes.forEach(mensaje => {
-            setTimeout(() => {
-                mensaje.style.transition = 'opacity 0.5s ease-out';
-                mensaje.style.opacity = '0';
-                setTimeout(() => mensaje.remove(), 500); 
-            }, 2000);
-        });
+  setTimeout(() => {
+    document.querySelectorAll(".mensajes li").forEach((msg) => {
+      msg.classList.add("mensaje-fade");
+
+      setTimeout(() => {
+        msg.remove();
+      }, 400);
     });
+  }, 4000);
 </script>
-{% endblock %}
-
-{% block content %}
-<div class="contenedor-horarios">
-    
-    <h1 class="titulo-horarios">Lista de Horarios</h1>
-
-    {% if messages %}
-    <div style="width: 100%; max-width: 800px;">
-        {% for message in messages %}
-        <div class="mensajes-alert {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}exito{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}error{% endif %}">
-            {{ message }}
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
-    <table class="tabla-horarios">
-        <thead>
-            <tr>
-                <th>Fecha</th>
-                <th>Hora de Entrada</th>
-                <th>Hora de Salida</th>
-                <th>Acciones</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for horario in horarios %}
-            <tr>
-                <td>{{ horario.fecha }}</td>
-                <td>{{ horario.horaEntrada }}</td>
-                <td>{{ horario.horaSalida }}</td>
-                <td>
-                    {% if not es_tutor %}
-                    <form method="POST" action="{% url 'eliminarHorario' horario.id %}" style="margin: 0;" onsubmit="confirmarEliminacion(event)">
-                        {% csrf_token %}
-                        <button type="submit" class="btn danger">Eliminar</button>
-                    </form>
-                    {% endif %}
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="4" class="fila-vacia">No hay horarios disponibles.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-
-    {% if not es_tutor %}
-    <div class="enlace">
-        <a href="{% url 'crearHorario' %}" class="btn btn-verde">Crear Nuevo Horario</a>
-    </div>
-    {% endif %}
-
-</div>
 {% endblock %}

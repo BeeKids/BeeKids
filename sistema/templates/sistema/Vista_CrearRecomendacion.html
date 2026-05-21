@@ -1,109 +1,365 @@
-{% extends 'sistema/base.html' %} {% block title %}Crear Platillo | BeeKids{% endblock %}
+{% extends 'sistema/base.html' %}
+
+{% block title %}Crear recomendación | BeeKids{% endblock %}
 
 {% block extra_css %}
-    <style>
-        /* Contenedor especial para centrar SOLO esta tarjeta */
-        .centrar-platillo {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding-top: 30px;
-        }
+<style>
+  :root {
+    --color-fondo: #f4f6f9;
+    --color-tarjeta: #ffffff;
+    --color-texto: #333333;
+    --color-texto-secundario: #666666;
+    --color-borde: #d7dbe0;
 
-        .contenedor-platillo {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra estándar del sistema */
-            width: 100%;
-            max-width: 450px;
-            box-sizing: border-box;
-        }
+    --color-primario: #3498db;
+    --color-primario-hover: #2980b9;
 
-        .titulo-platillo {
-            font-size: 2rem;
-            text-align: center;
-            color: #333;
-            margin-top: 0;
-            margin-bottom: 25px;
-            font-weight: 600;
-        }
+    --color-enlace: #16a085;
+    --color-enlace-hover: #12816e;
 
-        /* Estilos específicos del formulario */
-        .form-platillo label {
-            font-size: 1.05rem;
-            color: #333;
-            margin-bottom: 8px;
-            display: block;
-            font-weight: 500;
-        }
+    --sombra: 0 6px 20px rgba(0, 0, 0, 0.12);
+  }
 
-        .form-platillo input, .form-platillo textarea {
-            width: 100%;
-            padding: 12px;
-            margin-bottom: 20px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 1rem;
-            color: #333;
-            background-color: #fafafa;
-            box-sizing: border-box;
-            transition: border-color 0.3s ease, background-color 0.3s ease;
-        }
+  * {
+    box-sizing: border-box;
+  }
 
-        .form-platillo input:focus, .form-platillo textarea:focus {
-            border-color: #007BFF;
-            background-color: #fff;
-            outline: none;
-        }
+  .contenedor {
+    width: 100%;
+    max-width: 860px;
+    margin: 0 auto;
+    background-color: var(--color-tarjeta);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: var(--sombra);
+  }
 
-        .form-platillo textarea {
-            resize: vertical;
-            min-height: 120px;
-        }
+  .encabezado {
+    text-align: center;
+    margin-bottom: 30px;
+  }
 
-        /* Contenedor de botones */
-        .botones-accion {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px;
-            margin-top: 10px;
-        }
+  h1 {
+    font-size: 34px;
+    margin: 0;
+    font-weight: bold;
+  }
 
-        /* Clase para que los botones ocupen la mitad exacta */
-        .btn-mitad {
-            flex: 1;
-            padding: 12px;
-            font-size: 1.05rem;
-            text-align: center;
-        }
-    </style>
+  .mensajes {
+    margin: 0 0 22px 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .mensajes li {
+    padding: 12px 14px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .mensaje-fade {
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity 0.4s ease,
+      transform 0.4s ease;
+  }
+
+  .mensajes .error {
+    background-color: #fdecea;
+    color: #c0392b;
+    border: 1px solid #f5b7b1;
+  }
+
+  .mensajes .success {
+    background-color: #eafaf1;
+    color: #27ae60;
+    border: 1px solid #a3e4d7;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+
+  .seccion {
+    border: 1px solid #e4e8ed;
+    border-radius: 14px;
+    padding: 24px;
+    background-color: #ffffff;
+  }
+
+  .seccion-titulo {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+  }
+
+  .seccion-descripcion {
+    margin: 0 0 20px 0;
+    color: var(--color-texto-secundario);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  label {
+    font-weight: 600;
+    font-size: 15px;
+    color: #444444;
+  }
+
+  input,
+  textarea {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border: 1px solid var(--color-borde);
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: var(--color-texto);
+    font-family: "Poppins", sans-serif;
+  }
+
+  textarea {
+    min-height: 120px;
+    resize: none;
+  }
+
+  input:focus,
+  textarea:focus {
+    border-color: var(--color-primario);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+  }
+
+  .acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .boton-principal,
+  .boton-secundario-outline {
+    padding: 15px 24px;
+    min-height: 50px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: "Poppins", sans-serif;
+  }
+
+  .boton-principal {
+    background-color: var(--color-primario);
+    color: #ffffff;
+    border: none;
+  }
+
+  .boton-principal:hover {
+    background-color: var(--color-primario-hover);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.25);
+  }
+
+  .boton-secundario-outline {
+    background-color: #ffffff;
+    color: var(--color-texto);
+    border: 1px solid var(--color-borde);
+  }
+
+  .boton-secundario-outline:hover {
+    background-color: #f8fafc;
+    border-color: #c8d0d9;
+  }
+
+  .acciones-secundarias {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .link-secundario {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-enlace);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .link-secundario:hover {
+    color: var(--color-enlace-hover);
+    text-decoration: underline;
+  }
+
+  .link-secundario .icono {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    .contenedor {
+      padding: 24px 20px;
+    }
+
+    h1 {
+      font-size: 28px;
+    }
+
+    .acciones {
+      flex-direction: column;
+    }
+
+    .boton-principal,
+    .boton-secundario-outline {
+      width: 100%;
+    }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-    <div class="centrar-platillo">
-        <div class="contenedor-platillo">
-            
-            <h1 class="titulo-platillo">Crear Platillo</h1>
-            
-            <form class="form-platillo" action="{% url 'crearRecomendacion' %}" method="POST">
-                {% csrf_token %}
-                
-                <label for="nombre">Nombre:</label>
-                <input type="text" id="nombre" name="nombre" required placeholder="Escribe el nombre del platillo">
-            
-                <label for="descripcion">Descripción:</label>
-                <textarea id="descripcion" name="descripcion" required placeholder="Escribe la descripción del platillo"></textarea>
-            
-                <label for="comentarios">Consideraciones:</label>
-                <textarea id="comentarios" name="consideraciones" required placeholder="Escribe consideraciones adicionales"></textarea>
-            
-                <div class="botones-accion">
-                    <button type="submit" class="btn primary btn-mitad">Guardar</button>
-                    <button type="reset" class="btn btn-mitad">Cancelar</button>
-                </div>
-            </form>               
-            
+<div class="contenedor">
+  <div class="encabezado">
+    <h1>Crear platillo</h1>
+  </div>
+
+  {% if messages %}
+  <ul class="mensajes">
+    {% for message in messages %}
+    <li class="{{ message.tags|default:'' }}">
+      {% if message.tags == "success" %}
+      <strong>Éxito:</strong>
+      {% elif message.tags == "error" %}
+      <strong>Error:</strong>
+      {% else %}
+      <strong>Aviso:</strong>
+      {% endif %}
+
+      {{ message }}
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+
+  <form action="{% url 'crearRecomendacion' %}" method="POST">
+    {% csrf_token %}
+
+    <section class="seccion">
+      <h2 class="seccion-titulo">Información del platillo</h2>
+
+      <p class="seccion-descripcion">
+        Registra el nombre, la descripción y las consideraciones necesarias
+        para el platillo.
+      </p>
+
+      <div class="grid">
+        <div class="campo">
+          <label for="nombre">Nombre</label>
+
+          <input
+            type="text"
+            id="nombre"
+            name="nombre"
+            required
+            placeholder="Escribe el nombre del platillo"
+          />
         </div>
+
+        <div class="campo">
+          <label for="descripcion">Descripción</label>
+
+          <textarea
+            id="descripcion"
+            name="descripcion"
+            required
+            placeholder="Escribe la descripción del platillo"
+          ></textarea>
+        </div>
+
+        <div class="campo">
+          <label for="comentarios">Consideraciones</label>
+
+          <textarea
+            id="comentarios"
+            name="consideraciones"
+            required
+            placeholder="Escribe las consideraciones adicionales"
+          ></textarea>
+        </div>
+      </div>
+    </section>
+
+    <div class="acciones">
+      <a href="{% url 'administrar' %}" class="boton-secundario-outline">
+        Cancelar
+      </a>
+
+      <button type="submit" class="boton-principal">
+        Guardar platillo
+      </button>
     </div>
+
+    <div class="acciones-secundarias">
+      <a
+        class="link-secundario"
+        href="{% url 'gestionarRecomendaciones' %}"
+      >
+        <span class="icono">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="m12 19-7-7 7-7" />
+            <path d="M19 12H5" />
+          </svg>
+        </span>
+
+        Volver a la lista de platillos
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  setTimeout(() => {
+    document.querySelectorAll(".mensajes li").forEach((mensaje) => {
+      mensaje.classList.add("mensaje-fade");
+
+      setTimeout(() => {
+        mensaje.remove();
+      }, 400);
+    });
+  }, 4000);
+</script>
 {% endblock %}

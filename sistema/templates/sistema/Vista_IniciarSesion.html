@@ -174,6 +174,45 @@
     margin-top: 16px;
     text-align: center;
   }
+  .password-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  .password-wrapper .campo-input {
+    width: 100%;
+    padding-right: 52px;
+  }
+
+  .btn-toggle-password {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: transparent;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #6b7280;
+    cursor: pointer;
+  }
+
+  .icon-hidden {
+    display: none;
+  }
+
+  .btn-toggle-password.is-visible .icon-visible {
+    display: none;
+  }
+
+  .btn-toggle-password.is-visible .icon-hidden {
+    display: inline-flex;
+  }
 
   @media (max-width: 768px) {
     .login-card {
@@ -227,15 +266,70 @@
 
       <div class="campo">
         <label for="contrasena">Contraseña</label>
-        <input
-          class="campo-input"
-          type="password"
-          name="contrasena"
-          id="contrasena"
-          placeholder="Ingresa tu contraseña"
-          autocomplete="current-password"
-          required
-        />
+
+        <div class="password-wrapper">
+          <input
+            class="campo-input"
+            type="password"
+            name="contrasena"
+            id="contrasena"
+            placeholder="Ingresa tu contraseña"
+            autocomplete="current-password"
+            required
+          />
+
+          <button
+            type="button"
+            class="btn-toggle-password"
+            id="togglePassword"
+            aria-label="Mostrar contraseña"
+            aria-pressed="false"
+            aria-controls="contrasena"
+            title="Mostrar contraseña"
+          >
+            <span class="icon-eye icon-visible" aria-hidden="true">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                />
+                <circle cx="12" cy="12" r="3" />
+              </svg>
+            </span>
+
+            <span class="icon-eye icon-hidden" aria-hidden="true">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path
+                  d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+                />
+                <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+                <path
+                  d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+                />
+                <path d="m2 2 20 20" />
+              </svg>
+            </span>
+          </button>
+        </div>
       </div>
 
       <div class="acciones-login">
@@ -264,5 +358,33 @@
       setTimeout(() => msg.remove(), 400);
     });
   }, 4000);
+
+  function configurarTogglePassword(buttonId, inputId, showLabel, hideLabel) {
+    const button = document.getElementById(buttonId);
+    const input = document.getElementById(inputId);
+
+    if (!button || !input) return;
+
+    button.addEventListener("click", function () {
+      const isVisible = input.type === "text";
+
+      input.type = isVisible ? "password" : "text";
+      button.classList.toggle("is-visible", !isVisible);
+
+      const label = !isVisible ? hideLabel : showLabel;
+
+      button.setAttribute("aria-pressed", String(!isVisible));
+      button.setAttribute("aria-label", label);
+      button.setAttribute("title", label);
+    });
+  }
+
+  configurarTogglePassword(
+    "togglePassword",
+    "contrasena",
+    "Mostrar contraseña",
+    "Ocultar contraseña"
+  );
 </script>
+
 {% endblock %}

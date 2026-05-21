@@ -1,144 +1,407 @@
-{% extends 'sistema/base.html' %} {% block title %}Lista de Actividades | BeeKids{% endblock %}
+{% extends 'sistema/base.html' %}
+
+{% block title %}Lista de Actividades | BeeKids{% endblock %}
 
 {% block extra_css %}
 <style>
-    /* Estilos específicos de esta vista */
+  :root {
+    --color-fondo: #f4f6f9;
+    --color-tarjeta: #ffffff;
+    --color-texto: #333333;
+    --color-texto-secundario: #666666;
+    --color-borde: #d7dbe0;
+    --color-primario: #3498db;
+    --color-primario-hover: #2980b9;
+    --color-secundario: #eef3f7;
+    --color-secundario-hover: #e2e9ef;
+    --color-editar: #f39c12;
+    --color-editar-hover: #d68910;
+    --color-eliminar: #c0392b;
+    --color-eliminar-hover: #a93226;
+    --color-enlace: #16a085;
+    --color-enlace-hover: #12816e;
+    --sombra: 0 6px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  .pagina-actividades {
+    font-family: "Poppins", sans-serif;
+    background-color: var(--color-fondo);
+    padding: 30px 15px;
+    color: var(--color-texto);
+  }
+
+  .contenedor {
+    width: 100%;
+    max-width: 980px;
+    margin: 0 auto;
+    background-color: var(--color-tarjeta);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: var(--sombra);
+  }
+
+  .encabezado {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  h1 {
+    font-size: 34px;
+    margin: 0 0 22px 0;
+    font-weight: bold;
+  }
+
+  .acciones-encabezado {
+    display: flex;
+    justify-content: center;
+  }
+
+  .seccion {
+    border: 1px solid #e4e8ed;
+    border-radius: 14px;
+    padding: 24px;
+    background-color: #ffffff;
+    margin-bottom: 22px;
+  }
+
+  .seccion-titulo {
+    font-size: 20px;
+    font-weight: 700;
+    margin: 0 0 10px 0;
+  }
+
+  .seccion-descripcion {
+    margin: 0 0 20px 0;
+    color: var(--color-texto-secundario);
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .form-filtro {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 12px;
+    align-items: end;
+  }
+
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  label {
+    font-weight: 600;
+    font-size: 15px;
+    color: #444444;
+  }
+
+  input[type="date"] {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border: 1px solid var(--color-borde);
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: var(--color-texto);
+    font-family: "Poppins", sans-serif;
+  }
+
+  input[type="date"]:focus {
+    border-color: var(--color-primario);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+  }
+
+  .acciones-superiores {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 22px;
+  }
+
+  .boton-principal,
+  .boton-secundario,
+  .boton-secundario-outline,
+  .boton-editar,
+  .boton-eliminar {
+    padding: 13px 20px;
+    min-height: 46px;
+    border-radius: 10px;
+    font-size: 15px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: none;
+    font-family: "Poppins", sans-serif;
+  }
+
+  .boton-principal {
+    background-color: var(--color-primario);
+    color: #ffffff;
+  }
+
+  .boton-principal:hover {
+    background-color: var(--color-primario-hover);
+  }
+
+  .boton-secundario {
+    background-color: var(--color-secundario);
+    color: var(--color-texto);
+    border: 1px solid var(--color-borde);
+  }
+
+  .boton-secundario:hover {
+    background-color: var(--color-secundario-hover);
+  }
+
+  .boton-secundario-outline {
+    border: 1px solid var(--color-borde);
+    background-color: #ffffff;
+    color: var(--color-texto);
+  }
+
+  .boton-secundario-outline:hover {
+    background-color: #f8fafc;
+  }
+
+  .boton-editar {
+    background-color: var(--color-editar);
+    color: #ffffff;
+  }
+
+  .boton-editar:hover {
+    background-color: var(--color-editar-hover);
+  }
+
+  .boton-eliminar {
+    background-color: var(--color-eliminar);
+    color: #ffffff;
+  }
+
+  .boton-eliminar:hover {
+    background-color: var(--color-eliminar-hover);
+  }
+
+  .lista-actividades {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .actividad-item {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    align-items: center;
+    background-color: #f8fafc;
+    border: 1px solid var(--color-borde);
+    border-radius: 12px;
+    padding: 16px;
+  }
+
+  .actividad-info {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .actividad-nombre {
+    color: var(--color-texto);
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 17px;
+  }
+
+  .actividad-nombre:hover {
+    color: var(--color-enlace);
+    text-decoration: underline;
+  }
+
+  .actividad-horario {
+    color: var(--color-texto-secundario);
+    font-size: 14px;
+  }
+
+  .acciones-actividad {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .acciones-actividad form {
+    margin: 0;
+  }
+
+  .no-actividades {
+    background-color: #f8fafc;
+    border: 1px solid var(--color-borde);
+    border-radius: 12px;
+    padding: 18px;
+    color: var(--color-texto-secundario);
+    text-align: center;
+    font-size: 15px;
+  }
+
+  @media (max-width: 768px) {
+    .contenedor {
+      padding: 24px 20px;
+    }
 
     h1 {
-        text-align: center;
+      font-size: 28px;
     }
 
-    form.filtro {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 10px;
-        margin: 20px auto;
-        padding: 15px;
-        background-color: white;
-        border-radius: 8px;
-        max-width: 600px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Le añadí sombra sutil */
+    .form-filtro {
+      grid-template-columns: 1fr;
     }
 
-    form.filtro label {
-        font-weight: bold;
-        color: #3a7bd5;
+    .acciones-encabezado,
+    .acciones-superiores,
+    .actividad-item,
+    .acciones-actividad {
+      flex-direction: column;
+      align-items: stretch;
     }
 
-    form.filtro input[type="date"] {
-        padding: 10px;
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        font-size: 1rem;
+    .boton-principal,
+    .boton-secundario,
+    .boton-secundario-outline,
+    .boton-editar,
+    .boton-eliminar {
+      width: 100%;
     }
-
-    ul.lista-act {
-        list-style: none;
-        padding: 0;
-        margin: 20px auto;
-        max-width: 700px;
-    }
-
-    ul.lista-act li {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 15px;
-        margin-bottom: 10px;
-        background-color: white;
-        border-left: 5px solid #3a7bd5;
-        border-radius: 5px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-
-    ul.lista-act li a {
-        color: #3a7bd5;
-        font-weight: bold;
-        text-decoration: none;
-        font-size: 1.1rem;
-    }
-
-    ul.lista-act li a:hover {
-        text-decoration: underline;
-    }
-
-    .no-actividades {
-        text-align: center;
-        color: #777;
-        font-style: italic;
-        padding: 15px;
-        background-color: #f4f4f4;
-        border-radius: 5px;
-    }
-
-    .botones-actividad {
-        display: flex;
-        gap: 15px;
-        justify-content: center;
-        margin-bottom: 20px;
-    }
+  }
 </style>
+{% endblock %}
+
+{% block content %}
+<div class="pagina-actividades">
+  <div class="contenedor">
+    <div class="encabezado">
+      <h1>Lista de actividades</h1>
+
+      {% if not es_tutor %}
+      <div class="acciones-encabezado">
+        <a href="{% url 'crearActividad' %}" class="boton-principal">
+          Crear nueva actividad
+        </a>
+      </div>
+      {% endif %}
+    </div>
+
+    <section class="seccion">
+      <h2 class="seccion-titulo">Filtrar actividades</h2>
+      <p class="seccion-descripcion">
+        Selecciona una fecha para consultar las actividades programadas.
+      </p>
+
+      <form
+        class="form-filtro"
+        method="GET"
+        action="{% if es_tutor %}{% url 'listaActividades_tutor' %}{% else %}{% url 'listaActividades' %}{% endif %}"
+      >
+        {% csrf_token %}
+
+        <div class="campo">
+          <label for="fecha">Fecha</label>
+          <input
+            type="date"
+            id="fecha"
+            name="fecha"
+            value="{{ fecha }}"
+            required
+          />
+        </div>
+
+        <button type="submit" class="boton-secundario">Filtrar</button>
+      </form>
+    </section>
+
+    {% if fecha %}
+    <div class="acciones-superiores">
+      <a
+        href="{% if es_tutor %}{% url 'listaActividades_tutor' %}{% else %}{% url 'listaActividades' %}{% endif %}"
+        class="boton-secundario-outline"
+      >
+        Mostrar todas
+      </a>
+    </div>
+    {% endif %}
+
+    <section class="seccion">
+      <h2 class="seccion-titulo">Actividades registradas</h2>
+      <p class="seccion-descripcion">
+        Revisa las actividades disponibles y accede a sus detalles.
+      </p>
+
+      <ul class="lista-actividades">
+        {% if actividades %}
+        {% for actividad in actividades %}
+        <li class="actividad-item">
+          <div class="actividad-info">
+            <a
+              class="actividad-nombre"
+              href="{% if es_tutor %}{% url 'detallesDeActividad_tutor' actividad.id %}{% else %}{% url 'detallesDeActividad' actividad.id %}{% endif %}"
+            >
+              {{ actividad.nombre }}
+            </a>
+
+            <span class="actividad-horario">
+              {{ actividad.horaInicio }} - {{ actividad.horaFinal }}
+            </span>
+          </div>
+
+          {% if not es_tutor %}
+          <div class="acciones-actividad">
+            <a
+              href="{% url 'actualizarActividad' actividad.id %}"
+              class="boton-editar"
+            >
+              Editar
+            </a>
+
+            <form
+              action="{% url 'eliminarActividad' actividad.id %}"
+              method="POST"
+              onsubmit="confirmarEliminacion(event)"
+            >
+              {% csrf_token %}
+              <button type="submit" class="boton-eliminar">Eliminar</button>
+            </form>
+          </div>
+          {% endif %}
+        </li>
+        {% endfor %}
+        {% else %}
+        <li class="no-actividades">
+          No hay actividades programadas para esta fecha.
+        </li>
+        {% endif %}
+      </ul>
+    </section>
+  </div>
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    function confirmarEliminacion(event) {
-        if (!confirm("¿Estás seguro de que deseas eliminar esta actividad?")) {
-            event.preventDefault(); 
-        }
+  function confirmarEliminacion(event) {
+    if (!confirm("¿Estás seguro de que deseas eliminar esta actividad?")) {
+      event.preventDefault();
     }
+  }
 </script>
-{% endblock %}
-
-{% block content %}
-    <h1>Lista de Actividades</h1>
-
-    <form class="filtro" method="GET" action="{% if es_tutor %}{% url 'listaActividades_tutor' %}{% else %}{% url 'listaActividades' %}{% endif %}">
-        {% csrf_token %}
-        <label for="fecha">Selecciona una fecha:</label>
-        <input type="date" name="fecha" value="{{ fecha }}" required>
-        <button class="btn primary" type="submit">Filtrar</button>
-    </form>
-
-    <div class="botones-actividad">
-        {% if fecha %}
-        <a href="{% if es_tutor %}{% url 'listaActividades_tutor' %}{% else %}{% url 'listaActividades' %}{% endif %}">
-            <button class="btn">Mostrar todas las actividades</button>
-        </a>
-        {% endif %}
-    
-        <div class="boton-agregar-actividad">
-            {% if not es_tutor %}
-            <a href="{% url 'crearActividad' %}">
-                <button class="btn primary">Agregar Actividad</button>
-            </a>
-            {% endif %}
-        </div>
-    </div>
-
-    <ul class="lista-act">
-        {% if actividades %}
-            {% for actividad in actividades %}
-            <li>
-                <a href="{% if es_tutor %}{% url 'detallesDeActividad_tutor' actividad.id %}{% else %}{% url 'detallesDeActividad' actividad.id %}{% endif %}">
-                    {{ actividad.nombre }} ({{ actividad.horaInicio }} - {{ actividad.horaFinal }})
-                </a>
-                <div class="acciones-actividad" style="display:flex; gap:10px;">
-                    {% if not es_tutor %}
-                    <form action="{% url 'eliminarActividad' actividad.id %}" method="POST" style="margin: 0;" onsubmit="confirmarEliminacion(event)">
-                        {% csrf_token %}
-                        <button type="submit" class="btn danger">Eliminar</button>
-                    </form>
-                    <a href="{% url 'actualizarActividad' actividad.id %}">
-                        <button class="btn" style="background-color: #3498db; color: white;">Editar</button>
-                    </a>
-                    {% endif %}
-                </div>
-            </li>
-            {% endfor %}
-        {% else %}
-            <li class="no-actividades">No hay actividades programadas para esta fecha.</li>
-        {% endif %}
-    </ul>
 {% endblock %}

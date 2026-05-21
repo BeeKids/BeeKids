@@ -9,19 +9,22 @@ from sistema.forms_grupos import *
 def creacionHorario(request):
     if request.method == "POST":
         crearHorarioForm = CrearHorarioForm(request.POST)
+
         if crearHorarioForm.is_valid():
             try:
                 fecha = crearHorarioForm.cleaned_data['fecha']
                 horaEntrada = crearHorarioForm.cleaned_data['horaEntrada']
                 horaSalida = crearHorarioForm.cleaned_data['horaSalida']
-                
+
                 GestorHorarios.crearHorarioEscolar(fecha, horaEntrada, horaSalida)
                 messages.success(request, "Horario creado con éxito")
+                return redirect('listaHorarios')
+
             except Exception as e:
-                messages.error(request, f"Hubo un error al crear el horario: {str(e)}")
-        else:
-            for error in crearHorarioForm.errors.values():
-                messages.error(request, error)
+                crearHorarioForm.add_error(
+                    None,
+                    f"Hubo un error al crear el horario: {str(e)}"
+                )
     else:
         crearHorarioForm = CrearHorarioForm()
 

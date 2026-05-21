@@ -1,10 +1,11 @@
 {% extends 'sistema/base.html' %}
 
-{% block title %}Crear Usuario | BeeKids{% endblock %}
+{% block title %}Crear usuario | BeeKids{% endblock %}
 
 {% block extra_css %}
     <style>
       :root {
+        --color-fondo: #f4f6f9;
         --color-tarjeta: #ffffff;
         --color-texto: #333333;
         --color-texto-secundario: #666666;
@@ -33,35 +34,29 @@
         box-sizing: border-box;
       }
 
-      /* * NOTA: Eliminamos el background-color de body porque 
-       * base.html ya maneja el color de fondo general. 
-       */
       body {
-        font-family: "Poppins", sans-serif;
-        color: var(--color-texto);
-      }
-
-      .centrar-usuario {
-          display: flex;
-          justify-content: center;
-          padding-top: 20px;
-      }
+  font-family: "Poppins", sans-serif;
+  background-color: var(--color-fondo);
+  margin: 0;
+  color: var(--color-texto);
+}
 
       .contenedor {
-        width: 100%;
-        max-width: 860px;
-        background-color: var(--color-tarjeta);
-        padding: 40px;
-        border-radius: 16px;
-        box-shadow: var(--sombra);
-      }
+  width: 100%;
+  max-width: 860px;
+  margin: 30px auto;
+  background-color: var(--color-tarjeta);
+  padding: 40px;
+  border-radius: 16px;
+  box-shadow: var(--sombra);
+}
 
       .encabezado {
         text-align: center;
         margin-bottom: 30px;
       }
 
-      h1.titulo-registro {
+      h1 {
         font-size: 34px;
         color: var(--color-texto);
         margin: 0 0 10px 0;
@@ -80,7 +75,9 @@
         margin-bottom: 10px;
         font-size: 14px;
         line-height: 1.5;
-        transition: opacity 0.4s ease, transform 0.4s ease;
+        transition:
+          opacity 0.4s ease,
+          transform 0.4s ease;
       }
 
       .mensajes .error {
@@ -164,7 +161,10 @@
         font-size: 16px;
         border: 1px solid var(--color-borde);
         border-radius: 10px;
-        transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
+        transition:
+          border-color 0.3s ease,
+          box-shadow 0.3s ease,
+          background-color 0.3s ease;
         background-color: #ffffff;
         color: var(--color-texto);
       }
@@ -173,10 +173,12 @@
         appearance: none;
         -webkit-appearance: none;
         -moz-appearance: none;
+
         background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><path d='m6 9 6 6 6-6'/></svg>");
         background-repeat: no-repeat;
         background-position: right 14px center;
         background-size: 18px;
+
         padding-right: 44px;
       }
 
@@ -235,7 +237,10 @@
         justify-content: center;
         color: #6b7280;
         cursor: pointer;
-        transition: background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+        transition:
+          background-color 0.2s ease,
+          color 0.2s ease,
+          box-shadow 0.2s ease;
       }
 
       .btn-toggle-password:hover {
@@ -303,7 +308,6 @@
         font-weight: 700;
         text-decoration: none;
         text-align: center;
-        transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
       }
 
       .boton-principal {
@@ -315,7 +319,6 @@
 
       .boton-principal:hover {
         background-color: var(--color-primario-hover);
-        transform: translateY(-1px);
         box-shadow: 0 4px 12px rgba(52, 152, 219, 0.25);
       }
 
@@ -335,7 +338,6 @@
       .boton-secundario-outline:hover {
         background-color: #f8fafc;
         border-color: #c8d0d9;
-        transform: translateY(-1px);
       }
 
       .acciones-secundarias {
@@ -373,7 +375,7 @@
           padding: 24px 20px;
         }
 
-        h1.titulo-registro {
+        h1 {
           font-size: 28px;
         }
 
@@ -386,254 +388,321 @@
         }
       }
     </style>
-{% endblock %}
-
+    {% endblock %}
 {% block content %}
-    <div class="centrar-usuario">
-      <div class="contenedor">
-        <div class="encabezado">
-          <h1 class="titulo-registro">Registro</h1>
-        </div>
+    <div class="contenedor">
+      <div class="encabezado">
+        <h1>Registro</h1>
+      </div>
 
-        {% if messages %}
-        <ul class="mensajes" id="lista-mensajes">
-          {% for message in messages %}
-          <li class="{{ message.tags|default:'' }}">
-            {% if message.tags == 'success' %}
-            <strong>Éxito:</strong>
-            {% elif message.tags == 'error' %}
-            <strong>Error:</strong>
-            {% else %}
-            <strong>Aviso:</strong>
-            {% endif %} {{ message }}
-          </li>
+      {% if messages %}
+      <ul class="mensajes" id="lista-mensajes">
+        {% for message in messages %}
+        <li class="{{ message.tags|default:'' }}">
+          {% if message.tags == 'success' %}
+          <strong>Éxito:</strong>
+          {% elif message.tags == 'error' %}
+          <strong>Error:</strong>
+          {% else %}
+          <strong>Aviso:</strong>
+          {% endif %} {{ message }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      <form method="POST" novalidate id="form-crear-usuario">
+        {% csrf_token %} {% if form.non_field_errors %}
+        <div class="error-general">
+          {% for error in form.non_field_errors %}
+          <p>{{ error }}</p>
           {% endfor %}
-        </ul>
+        </div>
         {% endif %}
 
-        <form method="POST" novalidate id="form-crear-usuario">
-          {% csrf_token %} 
-          {% if form.non_field_errors %}
-          <div class="error-general">
-            {% for error in form.non_field_errors %}
-            <p>{{ error }}</p>
-            {% endfor %}
+        <section class="seccion">
+          <h2 class="seccion-titulo">Tipo de registro</h2>
+          <p class="seccion-descripcion">
+            Selecciona el rol para mostrar únicamente los campos requeridos para
+            el registro.
+          </p>
+
+          <div class="grid">
+            <div class="campo campo-completo">
+              <label for="{{ form.rol.id_for_label }}">Tipo de usuario</label>
+              {{ form.rol }} {% for error in form.rol.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div class="aviso-alumno campo-completo" id="aviso-alumno">
+              Este usuario no iniciará sesión en el sistema. Solo se registrará
+              para vincularlo con un tutor y posteriormente asignarlo a un
+              grupo.
+            </div>
           </div>
-          {% endif %}
+        </section>
 
-          <section class="seccion">
-            <h2 class="seccion-titulo">Tipo de registro</h2>
-            <p class="seccion-descripcion">
-              Selecciona el rol para mostrar únicamente los campos requeridos para
-              el registro.
-            </p>
+        <section class="seccion">
+          <h2 class="seccion-titulo">Información personal</h2>
+          <p class="seccion-descripcion">
+            Captura los datos básicos de identificación del usuario.
+          </p>
 
-            <div class="grid">
-              <div class="campo campo-completo">
-                <label for="{{ form.rol.id_for_label }}">Tipo de usuario</label>
-                {{ form.rol }} 
-                {% for error in form.rol.errors %}
-                <p class="error-texto" role="alert">{{ error }}</p>
-                {% endfor %}
-              </div>
-
-              <div class="aviso-alumno campo-completo" id="aviso-alumno">
-                Este usuario no iniciará sesión en el sistema. Solo se registrará
-                para vincularlo con un tutor y posteriormente asignarlo a un
-                grupo.
-              </div>
+          <div class="grid">
+            <div class="campo">
+              <label for="{{ form.nombre.id_for_label }}">Nombres</label>
+              {{ form.nombre }} {% for error in form.nombre.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
             </div>
-          </section>
 
-          <section class="seccion">
-            <h2 class="seccion-titulo">Información personal</h2>
-            <p class="seccion-descripcion">
-              Captura los datos básicos de identificación del usuario.
-            </p>
-
-            <div class="grid">
-              <div class="campo">
-                <label for="{{ form.nombre.id_for_label }}">Nombres</label>
-                {{ form.nombre }} 
-                {% for error in form.nombre.errors %}
-                <p class="error-texto" role="alert">{{ error }}</p>
-                {% endfor %}
-              </div>
-
-              <div class="campo">
-                <label for="{{ form.apellido.id_for_label }}">Apellidos</label>
-                {{ form.apellido }} 
-                {% for error in form.apellido.errors %}
-                <p class="error-texto" role="alert">{{ error }}</p>
-                {% endfor %}
-              </div>
+            <div class="campo">
+              <label for="{{ form.apellido.id_for_label }}">Apellidos</label>
+              {{ form.apellido }} {% for error in form.apellido.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
             </div>
-          </section>
-
-          <section class="seccion" id="credenciales-section">
-            <h2 class="seccion-titulo">Credenciales de acceso</h2>
-
-            <div class="grid">
-              <div class="campo campo-completo" id="email-container">
-                <label for="{{ form.email.id_for_label }}">Correo electrónico</label>
-                {{ form.email }} 
-                {% if form.email.help_text %}
-                <small class="help-text">{{ form.email.help_text }}</small>
-                {% endif %} 
-                {% for error in form.email.errors %}
-                <p class="error-texto" role="alert">{{ error }}</p>
-                {% endfor %}
-              </div>
-
-              <div class="campo campo-completo" id="username-container">
-                <label for="{{ form.username.id_for_label }}">Nombre de usuario</label>
-                {{ form.username }} 
-                {% if form.username.help_text %}
-                <small class="help-text">{{ form.username.help_text }}</small>
-                {% endif %} 
-                {% for error in form.username.errors %}
-                <p class="error-texto" role="alert">{{ error }}</p>
-                {% endfor %}
-              </div>
-
-              <div class="campo campo-completo" id="contrasena-container">
-                <label for="{{ form.contrasena.id_for_label }}">Contraseña</label>
-                <div class="password-wrapper">
-                  {{ form.contrasena }}
-                  <button
-                    type="button"
-                    class="btn-toggle-password"
-                    id="togglePassword"
-                    aria-label="Mostrar contraseña"
-                    aria-pressed="false"
-                    aria-controls="id_contrasena"
-                    title="Mostrar contraseña"
-                  >
-                    <span class="icon-eye icon-visible" aria-hidden="true">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-icon lucide-eye">
-                        <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                    </span>
-
-                    <span class="icon-eye icon-hidden" aria-hidden="true">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off-icon lucide-eye-off">
-                        <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
-                        <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
-                        <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
-                        <path d="m2 2 20 20" />
-                      </svg>
-                    </span>
-                  </button>
-                </div>
-
-                {% if form.contrasena.help_text %}
-                <small class="help-text">{{ form.contrasena.help_text }}</small>
-                {% endif %} 
-                {% for error in form.contrasena.errors %}
-                <p class="error-texto" role="alert">{{ error }}</p>
-                {% endfor %}
-              </div>
-
-              <div class="campo campo-completo" id="confirmar-contrasena-container">
-                <label for="{{ form.confirmar_contrasena.id_for_label }}">Confirmar contraseña</label>
-                <div class="password-wrapper">
-                  {{ form.confirmar_contrasena }}
-                  <button
-                    type="button"
-                    class="btn-toggle-password"
-                    id="toggleConfirmPassword"
-                    aria-label="Mostrar confirmación de contraseña"
-                    aria-pressed="false"
-                    aria-controls="id_confirmar_contrasena"
-                    title="Mostrar confirmación de contraseña"
-                  >
-                    <span class="icon-eye icon-visible" aria-hidden="true">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-icon lucide-eye">
-                        <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/>
-                        <circle cx="12" cy="12" r="3" />
-                      </svg>
-                    </span>
-
-                    <span class="icon-eye icon-hidden" aria-hidden="true">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye-off-icon lucide-eye-off">
-                        <path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/>
-                        <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
-                        <path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/>
-                        <path d="m2 2 20 20" />
-                      </svg>
-                    </span>
-                  </button>
-                </div>
-
-                {% for error in form.confirmar_contrasena.errors %}
-                <p class="error-texto" role="alert">{{ error }}</p>
-                {% endfor %}
-              </div>
-            </div>
-          </section>
-
-          <section class="seccion" id="asignacion-section">
-            <h2 class="seccion-titulo">Asignación</h2>
-            <p class="seccion-descripcion">
-              Completa la asignación según el rol seleccionado.
-            </p>
-
-            <div class="grid">
-              <div class="campo campo-completo" id="grupo-container">
-                <label for="{{ form.grupo.id_for_label }}">Grupo</label>
-                {{ form.grupo }} 
-                {% for error in form.grupo.errors %}
-                <p class="error-texto" role="alert">{{ error }}</p>
-                {% endfor %}
-              </div>
-
-              <div class="campo campo-completo" id="tutor-container">
-                <label for="{{ form.tutor.id_for_label }}">Tutor</label>
-                {{ form.tutor }} 
-                {% for error in form.tutor.errors %}
-                <p class="error-texto" role="alert">{{ error }}</p>
-                {% endfor %}
-              </div>
-            </div>
-          </section>
-
-          <div class="acciones">
-            <a class="boton-secundario-outline" href="{% url 'administrar' %}">
-              Cancelar
-            </a>
-
-            <button type="submit" class="boton-principal" id="submitBtn">
-              Crear usuario
-            </button>
           </div>
+        </section>
 
-          <div class="acciones-secundarias">
-            <a class="link-secundario" href="{% url 'listaUsuarios' %}">
-              <span class="icono">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <path d="m12 19-7-7 7-7" />
-                  <path d="M19 12H5" />
-                </svg>
-              </span>
-              Volver a la lista de usuarios
-            </a>
+        <section class="seccion" id="credenciales-section">
+          <h2 class="seccion-titulo">Credenciales de acceso</h2>
+
+          <div class="grid">
+            <div class="campo campo-completo" id="email-container">
+              <label for="{{ form.email.id_for_label }}"
+                >Correo electrónico</label
+              >
+              {{ form.email }} {% if form.email.help_text %}
+              <small class="help-text">{{ form.email.help_text }}</small>
+              {% endif %} {% for error in form.email.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div class="campo campo-completo" id="username-container">
+              <label for="{{ form.username.id_for_label }}"
+                >Nombre de usuario</label
+              >
+              {{ form.username }} {% if form.username.help_text %}
+              <small class="help-text">{{ form.username.help_text }}</small>
+              {% endif %} {% for error in form.username.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div class="campo campo-completo" id="contrasena-container">
+              <label for="{{ form.contrasena.id_for_label }}">Contraseña</label>
+              <div class="password-wrapper">
+                {{ form.contrasena }}
+                <button
+                  type="button"
+                  class="btn-toggle-password"
+                  id="togglePassword"
+                  aria-label="Mostrar contraseña"
+                  aria-pressed="false"
+                  aria-controls="id_contrasena"
+                  title="Mostrar contraseña"
+                >
+                  <span class="icon-eye icon-visible" aria-hidden="true">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-eye-icon lucide-eye"
+                    >
+                      <path
+                        d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                      />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </span>
+
+                  <span class="icon-eye icon-hidden" aria-hidden="true">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-eye-off-icon lucide-eye-off"
+                    >
+                      <path
+                        d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+                      />
+                      <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+                      <path
+                        d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+                      />
+                      <path d="m2 2 20 20" />
+                    </svg>
+                  </span>
+                </button>
+              </div>
+
+              {% if form.contrasena.help_text %}
+              <small class="help-text">{{ form.contrasena.help_text }}</small>
+              {% endif %} {% for error in form.contrasena.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div
+              class="campo campo-completo"
+              id="confirmar-contrasena-container"
+            >
+              <label for="{{ form.confirmar_contrasena.id_for_label }}">
+                Confirmar contraseña
+              </label>
+              <div class="password-wrapper">
+                {{ form.confirmar_contrasena }}
+                <button
+                  type="button"
+                  class="btn-toggle-password"
+                  id="toggleConfirmPassword"
+                  aria-label="Mostrar confirmación de contraseña"
+                  aria-pressed="false"
+                  aria-controls="id_confirmar_contrasena"
+                  title="Mostrar confirmación de contraseña"
+                >
+                  <span class="icon-eye icon-visible" aria-hidden="true">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-eye-icon lucide-eye"
+                    >
+                      <path
+                        d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"
+                      />
+                      <circle cx="12" cy="12" r="3" />
+                    </svg>
+                  </span>
+
+                  <span class="icon-eye icon-hidden" aria-hidden="true">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="24"
+                      height="24"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="lucide lucide-eye-off-icon lucide-eye-off"
+                    >
+                      <path
+                        d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"
+                      />
+                      <path d="M14.084 14.158a3 3 0 0 1-4.242-4.242" />
+                      <path
+                        d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"
+                      />
+                      <path d="m2 2 20 20" />
+                    </svg>
+                  </span>
+                </button>
+              </div>
+
+              {% for error in form.confirmar_contrasena.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
           </div>
-        </form>
-      </div>
+        </section>
+
+        <section class="seccion" id="asignacion-section">
+          <h2 class="seccion-titulo">Asignación</h2>
+          <p class="seccion-descripcion">
+            Completa la asignación según el rol seleccionado.
+          </p>
+
+          <div class="grid">
+            <div class="campo campo-completo" id="grupo-container">
+              <label for="{{ form.grupo.id_for_label }}">Grupo</label>
+              {{ form.grupo }} {% for error in form.grupo.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+
+            <div class="campo campo-completo" id="tutor-container">
+              <label for="{{ form.tutor.id_for_label }}">Tutor</label>
+              {{ form.tutor }} {% for error in form.tutor.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
+          </div>
+        </section>
+
+        <div class="acciones">
+          <a class="boton-secundario-outline" href="{% url 'administrar' %}">
+            Cancelar
+          </a>
+
+          <button type="submit" class="boton-principal" id="submitBtn">
+            Crear usuario
+          </button>
+        </div>
+
+        <div class="acciones-secundarias">
+          <a class="link-secundario" href="{% url 'listaUsuarios' %}">
+            <span class="icono">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="m12 19-7-7 7-7" />
+                <path d="M19 12H5" />
+              </svg>
+            </span>
+            Volver a la lista de usuarios
+          </a>
+        </div>
+      </form>
     </div>
-{% endblock %}
+    {% endblock %}
+    {% block extra_js %}
 
-{% block extra_js %}
     <script>
       const rolSelect = document.getElementById("id_rol");
       const grupoContainer = document.getElementById("grupo-container");
       const tutorContainer = document.getElementById("tutor-container");
       const emailContainer = document.getElementById("email-container");
       const usernameContainer = document.getElementById("username-container");
-      const contrasenaContainer = document.getElementById("contrasena-container");
-      const confirmarContrasenaContainer = document.getElementById("confirmar-contrasena-container");
-      const credencialesSection = document.getElementById("credenciales-section");
+      const contrasenaContainer = document.getElementById(
+        "contrasena-container"
+      );
+      const confirmarContrasenaContainer = document.getElementById(
+        "confirmar-contrasena-container"
+      );
+      const credencialesSection = document.getElementById(
+        "credenciales-section"
+      );
       const avisoAlumno = document.getElementById("aviso-alumno");
       const form = document.getElementById("form-crear-usuario");
       const submitBtn = document.getElementById("submitBtn");
@@ -710,7 +779,12 @@
         }
       }
 
-      function configurarTogglePassword(buttonId, inputId, showLabel, hideLabel) {
+      function configurarTogglePassword(
+        buttonId,
+        inputId,
+        showLabel,
+        hideLabel
+      ) {
         const button = document.getElementById(buttonId);
         const input = document.getElementById(inputId);
 
@@ -752,7 +826,10 @@
         input.addEventListener("blur", () => {
           const contenedorCampo = input.closest(".campo");
 
-          if (!contenedorCampo || contenedorCampo.classList.contains("campo-oculto")) {
+          if (
+            !contenedorCampo ||
+            contenedorCampo.classList.contains("campo-oculto")
+          ) {
             input.classList.remove("error", "valido");
             return;
           }

@@ -1,90 +1,339 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Detalles de la Actividad</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #eef2f7;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
-        .contenedor {
-            background-color: #ffffff;
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            max-width: 600px;
-            width: 90%;
-            text-align: center;
-        }
-        h1 {
-            font-size: 24px;
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .detalle {
-            text-align: left;
-            font-size: 16px;
-            line-height: 1.6;
-            margin-bottom: 20px;
-        }
-        .detalle p {
-            margin: 10px 0;
-        }
-        .detalle strong {
-            color: #007bff;
-        }
-        a {
-            display: inline-block;
-            margin-top: 20px;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #ffffff;
-            text-decoration: none;
-            font-size: 16px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-        }
-        a:hover {
-            background-color: #0056b3;
-        }
-    </style>
-</head>
-<body>
-    <div class="contenedor">
-        <h1>Detalles de la Actividad</h1>
-        <div class="detalle">
-            <p><strong>Nombre:</strong> {{ actividad.nombre }}</p>
-            <p><strong>Descripción:</strong> {{ actividad.descripcion }}</p>
-            <p><strong>Hora de Inicio:</strong> {{ actividad.horaInicio }}</p>
-            <p><strong>Hora Final:</strong> {{ actividad.horaFinal }}</p>
-            <p><strong>Horario Asociado:</strong> {{ actividad.horario }}</p>
-            <p><strong>{{ actividad.grupo }}</strong> </p>
-            <p><strong>Fecha:</strong> {{ actividad.fecha }}</p>
-        </div>
 
-        <!-- Botón para iniciar/terminar actividad -->
+    <style>
+      :root {
+        --color-fondo: #f4f6f9;
+        --color-tarjeta: #ffffff;
+        --color-texto: #333333;
+        --color-texto-secundario: #666666;
+        --color-borde: #d7dbe0;
+
+        --color-editar: #f39c12;
+        --color-editar-hover: #d68910;
+
+        --color-iniciar: #27ae60;
+        --color-iniciar-hover: #229954;
+
+        --color-peligro: #c0392b;
+        --color-peligro-hover: #a93226;
+
+        --color-enlace: #16a085;
+        --color-enlace-hover: #12816e;
+
+        --sombra: 0 6px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: var(--color-fondo);
+        margin: 0;
+        padding: 30px 15px;
+        color: var(--color-texto);
+      }
+
+      .contenedor {
+        width: 100%;
+        max-width: 860px;
+        margin: 0 auto;
+        background-color: var(--color-tarjeta);
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: var(--sombra);
+      }
+
+      .encabezado {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      h1 {
+        font-size: 34px;
+        margin: 0;
+        font-weight: bold;
+      }
+
+      .seccion {
+        border: 1px solid #e4e8ed;
+        border-radius: 14px;
+        padding: 24px;
+        background-color: #ffffff;
+        margin-bottom: 22px;
+      }
+
+      .seccion-titulo {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0 0 10px 0;
+      }
+
+      .seccion-descripcion {
+        margin: 0 0 20px 0;
+        color: var(--color-texto-secundario);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .detalle-actividad {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .detalle-item {
+        background-color: #f8fafc;
+        border: 1px solid var(--color-borde);
+        border-radius: 10px;
+        padding: 14px;
+      }
+
+      .detalle-item-completo {
+        grid-column: 1 / -1;
+      }
+
+      .detalle-label {
+        display: block;
+        font-size: 13px;
+        color: var(--color-texto-secundario);
+        margin-bottom: 6px;
+      }
+
+      .detalle-valor {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--color-texto);
+        line-height: 1.5;
+      }
+
+      .acciones-principales {
+        display: flex;
+        gap: 12px;
+        justify-content: flex-end;
+        margin-top: 8px;
+      }
+
+      .acciones-principales form {
+        margin: 0;
+      }
+
+      .boton-iniciar,
+      .boton-editar,
+      .boton-peligro {
+        padding: 15px 24px;
+        min-height: 50px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 700;
+        text-decoration: none;
+        text-align: center;
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+      }
+
+      .boton-iniciar {
+        border: none;
+        background-color: var(--color-iniciar);
+        color: #ffffff;
+      }
+
+      .boton-iniciar:hover {
+        background-color: var(--color-iniciar-hover);
+      }
+
+      .boton-editar {
+        border: none;
+        background-color: var(--color-editar);
+        color: #ffffff;
+      }
+
+      .boton-editar:hover {
+        background-color: var(--color-editar-hover);
+      }
+
+      .boton-peligro {
+        border: none;
+        background-color: var(--color-peligro);
+        color: #ffffff;
+      }
+
+      .boton-peligro:hover {
+        background-color: var(--color-peligro-hover);
+      }
+
+      .acciones-secundarias {
+        margin-top: 20px;
+        display: flex;
+        justify-content: flex-end;
+      }
+
+      .link-secundario {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--color-enlace);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .link-secundario:hover {
+        color: var(--color-enlace-hover);
+        text-decoration: underline;
+      }
+
+      .link-secundario .icono {
+        display: inline-flex;
+        align-items: center;
+      }
+
+      .link-secundario {
+        color: var(--color-enlace);
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+      }
+
+      .link-secundario:hover {
+        color: var(--color-enlace-hover);
+        text-decoration: underline;
+      }
+
+      @media (max-width: 768px) {
+        .contenedor {
+          padding: 24px 20px;
+        }
+
+        h1 {
+          font-size: 28px;
+        }
+
+        .detalle-actividad {
+          grid-template-columns: 1fr;
+        }
+
+        .acciones-principales,
+        .acciones-secundarias {
+          flex-direction: column;
+        }
+
+        .boton-iniciar,
+        .boton-editar,
+        .boton-peligro,
+        .link-secundario {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="contenedor">
+      <div class="encabezado">
+        <h1>Detalles de la actividad</h1>
+      </div>
+
+      <section class="seccion">
+        <h2 class="seccion-titulo">Información general</h2>
+        <p class="seccion-descripcion">
+          Consulta los datos registrados para la actividad seleccionada.
+        </p>
+
+        <div class="detalle-actividad">
+          <div class="detalle-item">
+            <span class="detalle-label">Nombre</span>
+            <span class="detalle-valor">{{ actividad.nombre }}</span>
+          </div>
+
+          <div class="detalle-item">
+            <span class="detalle-label">Grupo</span>
+            <span class="detalle-valor">{{ actividad.grupo }}</span>
+          </div>
+
+          <div class="detalle-item detalle-item-completo">
+            <span class="detalle-label">Descripción</span>
+            <span class="detalle-valor">{{ actividad.descripcion }}</span>
+          </div>
+
+          <div class="detalle-item">
+            <span class="detalle-label">Hora de inicio</span>
+            <span class="detalle-valor">{{ actividad.horaInicio }}</span>
+          </div>
+
+          <div class="detalle-item">
+            <span class="detalle-label">Hora final</span>
+            <span class="detalle-valor">{{ actividad.horaFinal }}</span>
+          </div>
+
+          <div class="detalle-item">
+            <span class="detalle-label">Horario asociado</span>
+            <span class="detalle-valor">{{ actividad.horario }}</span>
+          </div>
+
+          <div class="detalle-item">
+            <span class="detalle-label">Fecha</span>
+            <span class="detalle-valor">{{ actividad.fecha }}</span>
+          </div>
+        </div>
+      </section>
+
+      <div class="acciones-principales">
         {% if actividadIniciada %}
-            <form method="POST">
-                {% csrf_token %}
-                <button type="submit">Terminar actividad</button>
-            </form>
+        <form method="POST">
+          {% csrf_token %}
+          <button type="submit" class="boton-peligro">
+            Terminar actividad
+          </button>
+        </form>
         {% else %}
-            <form method="POST">
-                {% csrf_token %}
-                <button type="submit">Iniciar actividad</button>
-            </form>
+        <form method="POST">
+          {% csrf_token %}
+          <button type="submit" class="boton-iniciar">Iniciar actividad</button>
+        </form>
         {% endif %}
 
-        <a href="{% if es_tutor %}{% url 'listaActividades_tutor' %}{% else %}{% url 'listaActividades' %}{% endif %}">Volver a la lista de actividades</a>
-    </div>
-</body>
+        <a
+          class="boton-editar"
+          href="{% url 'actualizarActividad' actividad.id %}"
+        >
+          Editar actividad
+        </a>
+      </div>
 
+      <div class="acciones-secundarias">
+        <a
+          class="link-secundario"
+          href="{% if es_tutor %}{% url 'listaActividades_tutor' %}{% else %}{% url 'listaActividades' %}{% endif %}"
+        >
+          <span class="icono">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="m12 19-7-7 7-7" />
+              <path d="M19 12H5" />
+            </svg>
+          </span>
+
+          Volver a la lista de actividades
+        </a>
+      </div>
+    </div>
+  </body>
 </html>

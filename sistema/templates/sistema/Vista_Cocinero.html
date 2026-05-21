@@ -142,9 +142,7 @@
           <div class="logo" aria-hidden="true"></div>
           <div class="title">
             <h1>Panel de Cocinero</h1>
-            <p>
-              Visualiza menús y platillos.
-            </p>
+            <p>Visualiza menús y platillos.</p>
           </div>
         </div>
 
@@ -156,16 +154,17 @@
       </header>
 
       <main class="grid">
-
         <!-- COCINA -->
         <section class="card third">
           <h2>Cocina</h2>
-          <p>Gestión de menús y platilos.</p>
+          <p>Gestión de menús.</p>
           <div class="row">
             <a class="btn primary" href="{% url 'seleccionarMenuSemanal' %}"
               >Seleccionar menú</a
             >
-            <a class="btn" href="{% url 'verMenuSemanal' %}">Ver menú semanal</a>
+            <a class="btn" href="{% url 'verMenuSemanal' %}"
+              >Ver menú semanal</a
+            >
           </div>
         </section>
 
@@ -179,7 +178,6 @@
             >
           </div>
         </section>
-        
       </main>
     </div>
   </body>

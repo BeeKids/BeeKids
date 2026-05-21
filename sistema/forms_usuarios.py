@@ -3,7 +3,66 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from sistema.models.models import Grupo, Tutor, UsuarioEscolar
 import re
+import unicodedata
 
+
+def validar_solo_letras(texto, campo):
+    if re.search(r'\d', texto):
+        raise ValidationError(f"El campo {campo} no puede contener números.")
+
+    if not re.match(r'^[A-Za-zÁÉÍÓÚáéíóúÑñ\s]+$', texto):
+        raise ValidationError(f"El campo {campo} solo puede contener letras y espacios.")
+
+    return texto
+
+def validar_contrasena_segura(contrasena):
+    if len(contrasena) < 8:
+        raise ValidationError("La contraseña debe tener al menos 8 caracteres.")
+    if not re.search(r'[A-Z]', contrasena):
+        raise ValidationError("La contraseña debe contener al menos una mayúscula.")
+    if not re.search(r'[a-z]', contrasena):
+        raise ValidationError("La contraseña debe contener al menos una minúscula.")
+    if not re.search(r'\d', contrasena):
+        raise ValidationError("La contraseña debe contener al menos un número.")
+    if not re.search(r'[^A-Za-z0-9]', contrasena):
+        raise ValidationError("La contraseña debe contener al menos un carácter especial.")
+
+    return contrasena
+
+def generar_username_unico(nombre, apellido, usuario_actual=None):
+    nombre_base = nombre.strip().lower()
+    apellido_base = apellido.strip().lower()
+
+    nombre_completo = f"{nombre_base}.{apellido_base}"
+
+    nombre_completo = re.sub(r'\s+', '.', nombre_completo)
+
+    nombre_completo = unicodedata.normalize('NFKD', nombre_completo)
+    nombre_completo = nombre_completo.encode('ascii', 'ignore').decode('utf-8')
+
+    username_base = re.sub(r'[^a-z0-9._]', '', nombre_completo)
+
+    username = username_base
+    contador = 1
+
+    consulta = UsuarioEscolar.objects.filter(username__iexact=username)
+
+    if usuario_actual:
+        consulta = consulta.exclude(id=usuario_actual.id)
+
+    while consulta.exists():
+        username = f"{username_base}{contador}"
+
+        consulta = UsuarioEscolar.objects.filter(
+            username__iexact=username
+        )
+
+        if usuario_actual:
+            consulta = consulta.exclude(id=usuario_actual.id)
+
+        contador += 1
+
+    return username
 
 class CrearUsuarioForm(forms.Form):
     ROLES = [
@@ -85,7 +144,10 @@ class CrearUsuarioForm(forms.Form):
         widget=forms.PasswordInput(attrs={
             'placeholder': 'Repite la contraseña',
             'class': 'campo-input',
-            'autocomplete': 'new-password'
+            'autocomplete': 'new-password',
+            'onpaste': 'return false;',
+            'oncopy': 'return false;',
+            'oncut': 'return false;'
         })
     )
 
@@ -120,15 +182,19 @@ class CrearUsuarioForm(forms.Form):
 
     def clean_nombre(self):
         nombre = self.cleaned_data['nombre'].strip()
+
         if len(nombre) < 2:
             raise ValidationError("El nombre debe tener al menos 2 caracteres.")
-        return nombre
+
+        return validar_solo_letras(nombre, "nombres")
 
     def clean_apellido(self):
         apellido = self.cleaned_data['apellido'].strip()
+
         if len(apellido) < 2:
             raise ValidationError("El apellido debe tener al menos 2 caracteres.")
-        return apellido
+
+        return validar_solo_letras(apellido, "apellidos")
 
     def clean_username(self):
         username = self.cleaned_data.get('username')
@@ -183,18 +249,20 @@ class CrearUsuarioForm(forms.Form):
         if not contrasena:
             return ""
 
-        if len(contrasena) < 8:
-            raise ValidationError("La contraseña debe tener al menos 8 caracteres.")
-        if not re.search(r'[A-Z]', contrasena):
-            raise ValidationError("La contraseña debe contener al menos una mayúscula.")
-        if not re.search(r'[a-z]', contrasena):
-            raise ValidationError("La contraseña debe contener al menos una minúscula.")
-        if not re.search(r'\d', contrasena):
-            raise ValidationError("La contraseña debe contener al menos un número.")
-        if not re.search(r'[^A-Za-z0-9]', contrasena):
-            raise ValidationError("La contraseña debe contener al menos un carácter especial.")
+        return validar_contrasena_segura(contrasena)
+        
+    def validar_campos_de_acceso_requeridos(self, email, username, contrasena, confirmar_contrasena):
+        if not email and 'email' not in self.errors:
+            self.add_error('email', 'Debes ingresar un correo electrónico.')
 
-        return contrasena
+        if not username and 'username' not in self.errors:
+            self.add_error('username', 'Debes ingresar un nombre de usuario.')
+
+        if not contrasena and 'contrasena' not in self.errors:
+            self.add_error('contrasena', 'Debes ingresar una contraseña.')
+
+        if not confirmar_contrasena and 'confirmar_contrasena' not in self.errors:
+            self.add_error('confirmar_contrasena', 'Debes confirmar la contraseña.')
 
     def clean(self):
         cleaned_data = super().clean()
@@ -209,14 +277,10 @@ class CrearUsuarioForm(forms.Form):
         if rol == 'Profesor':
             if not grupo:
                 self.add_error('grupo', 'Debes seleccionar un grupo para el profesor.')
-            if not email:
-                self.add_error('email', 'Debes ingresar un correo electrónico.')
-            if not username:
-                self.add_error('username', 'Debes ingresar un nombre de usuario.')
-            if not contrasena:
-                self.add_error('contrasena', 'Debes ingresar una contraseña.')
-            if not confirmar_contrasena:
-                self.add_error('confirmar_contrasena', 'Debes confirmar la contraseña.')
+
+            self.validar_campos_de_acceso_requeridos(
+                email, username, contrasena, confirmar_contrasena
+            )
 
             cleaned_data['tutor'] = None
 
@@ -224,21 +288,21 @@ class CrearUsuarioForm(forms.Form):
             if not tutor:
                 self.add_error('tutor', 'Debes seleccionar un tutor para el alumno.')
 
+            nombre = cleaned_data.get('nombre')
+            apellido = cleaned_data.get('apellido')
+
+            if nombre and apellido:
+                cleaned_data['username'] = generar_username_unico(nombre, apellido)
+
             cleaned_data['grupo'] = None
             cleaned_data['email'] = ""
-            cleaned_data['username'] = ""
             cleaned_data['contrasena'] = ""
             cleaned_data['confirmar_contrasena'] = ""
 
         else:
-            if not email:
-                self.add_error('email', 'Debes ingresar un correo electrónico.')
-            if not username:
-                self.add_error('username', 'Debes ingresar un nombre de usuario.')
-            if not contrasena:
-                self.add_error('contrasena', 'Debes ingresar una contraseña.')
-            if not confirmar_contrasena:
-                self.add_error('confirmar_contrasena', 'Debes confirmar la contraseña.')
+            self.validar_campos_de_acceso_requeridos(
+                email, username, contrasena, confirmar_contrasena
+            )
 
             cleaned_data['grupo'] = None
             cleaned_data['tutor'] = None
@@ -270,6 +334,7 @@ class ModificarUsuarioForm(forms.Form):
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={
+            'placeholder': 'Ej. Aurora',
             'class': 'campo-input',
             'autocomplete': 'given-name'
         })
@@ -280,6 +345,7 @@ class ModificarUsuarioForm(forms.Form):
         max_length=100,
         required=False,
         widget=forms.TextInput(attrs={
+            'placeholder': 'Ej. Cetina',
             'class': 'campo-input',
             'autocomplete': 'family-name'
         })
@@ -289,6 +355,7 @@ class ModificarUsuarioForm(forms.Form):
         label="Correo electrónico",
         required=False,
         widget=forms.EmailInput(attrs={
+            'placeholder': 'ejemplo@correo.com',
             'class': 'campo-input',
             'autocomplete': 'email',
             'pattern': r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$',
@@ -303,17 +370,34 @@ class ModificarUsuarioForm(forms.Form):
         required=False,
         validators=[username_validator],
         widget=forms.TextInput(attrs={
+            'placeholder': 'Ej. aurora.cetina',
             'class': 'campo-input',
             'autocomplete': 'username'
-        })
+        }),
+        help_text="Debe tener entre 4 y 20 caracteres. Solo letras, números, punto y guion bajo."
     )
 
     contrasena = forms.CharField(
         label="Contraseña",
         required=False,
         widget=forms.PasswordInput(attrs={
+            'placeholder': 'Ingresa una contraseña segura',
             'class': 'campo-input',
             'autocomplete': 'new-password'
+        }),
+        help_text="Mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial."
+    )
+
+    confirmar_contrasena = forms.CharField(
+        label="Confirmar contraseña",
+        required=False,
+        widget=forms.PasswordInput(attrs={
+            'placeholder': 'Repite la contraseña',
+            'class': 'campo-input',
+            'autocomplete': 'new-password',
+            'onpaste': 'return false;',
+            'oncopy': 'return false;',
+            'oncut': 'return false;'
         })
     )
 
@@ -321,6 +405,7 @@ class ModificarUsuarioForm(forms.Form):
         queryset=Grupo.objects.all(),
         label="Grupo",
         required=False,
+        empty_label="Selecciona un grupo",
         widget=forms.Select(attrs={'class': 'campo-input'})
     )
 
@@ -328,6 +413,7 @@ class ModificarUsuarioForm(forms.Form):
         queryset=Tutor.objects.all(),
         label="Tutor",
         required=False,
+        empty_label="Selecciona un tutor",
         widget=forms.Select(attrs={'class': 'campo-input'})
     )
 
@@ -337,7 +423,7 @@ class ModificarUsuarioForm(forms.Form):
         super().__init__(*args, **kwargs)
 
         self.usuario = usuario
-        self.rol = rol
+        self.rol = rol.capitalize() if rol else None
 
         if usuario:
             self.fields['nombre'].initial = usuario.first_name
@@ -347,11 +433,37 @@ class ModificarUsuarioForm(forms.Form):
             self.fields['grupo'].initial = getattr(usuario, 'grupo', None)
             self.fields['tutor'].initial = getattr(usuario, 'tutorAlumno', None)
 
+    def clean_nombre(self):
+        nombre = self.cleaned_data.get('nombre')
+
+        if not nombre:
+            raise ValidationError("Debes ingresar el nombre.")
+
+        nombre = nombre.strip()
+
+        if len(nombre) < 2:
+            raise ValidationError("El nombre debe tener al menos 2 caracteres.")
+
+        return validar_solo_letras(nombre, "nombres")
+
+    def clean_apellido(self):
+        apellido = self.cleaned_data.get('apellido')
+
+        if not apellido:
+            raise ValidationError("Debes ingresar el apellido.")
+
+        apellido = apellido.strip()
+
+        if len(apellido) < 2:
+            raise ValidationError("El apellido debe tener al menos 2 caracteres.")
+
+        return validar_solo_letras(apellido, "apellidos")
+
     def clean_username(self):
         username = self.cleaned_data.get('username')
 
         if not username:
-            return username
+            return ""
 
         username = username.strip()
 
@@ -368,7 +480,7 @@ class ModificarUsuarioForm(forms.Form):
         email = self.cleaned_data.get('email')
 
         if not email:
-            return email
+            return ""
 
         email = email.strip().lower()
 
@@ -404,38 +516,71 @@ class ModificarUsuarioForm(forms.Form):
         contrasena = self.cleaned_data.get('contrasena')
 
         if not contrasena:
-            return contrasena
+            return ""
 
-        if len(contrasena) < 8:
-            raise ValidationError("La contraseña debe tener al menos 8 caracteres.")
-        if not re.search(r'[A-Z]', contrasena):
-            raise ValidationError("La contraseña debe contener al menos una mayúscula.")
-        if not re.search(r'[a-z]', contrasena):
-            raise ValidationError("La contraseña debe contener al menos una minúscula.")
-        if not re.search(r'\d', contrasena):
-            raise ValidationError("La contraseña debe contener al menos un número.")
-        if not re.search(r'[^A-Za-z0-9]', contrasena):
-            raise ValidationError("La contraseña debe contener al menos un carácter especial.")
+        return validar_contrasena_segura(contrasena)
 
-        return contrasena
+    def validar_campos_de_acceso_requeridos(self, email, username, contrasena, confirmar_contrasena):
+        if not email and 'email' not in self.errors:
+            self.add_error('email', 'Debes ingresar un correo electrónico.')
+
+        if not username and 'username' not in self.errors:
+            self.add_error('username', 'Debes ingresar un nombre de usuario.')
+
+        if not contrasena and 'contrasena' not in self.errors:
+            self.add_error('contrasena', 'Debes ingresar una contraseña.')
+
+        if not confirmar_contrasena and 'confirmar_contrasena' not in self.errors:
+            self.add_error('confirmar_contrasena', 'Debes confirmar la contraseña.')
 
     def clean(self):
         cleaned_data = super().clean()
         grupo = cleaned_data.get('grupo')
         tutor = cleaned_data.get('tutor')
+        email = cleaned_data.get('email')
+        username = cleaned_data.get('username')
+        contrasena = cleaned_data.get('contrasena')
+        confirmar_contrasena = cleaned_data.get('confirmar_contrasena')
 
         if self.rol == 'Profesor':
             if not grupo:
                 self.add_error('grupo', 'Debes seleccionar un grupo para el profesor.')
+
+            self.validar_campos_de_acceso_requeridos(
+                email,
+                username,
+                contrasena,
+                confirmar_contrasena
+            )
+
             cleaned_data['tutor'] = None
 
         elif self.rol == 'Alumno':
             if not tutor:
                 self.add_error('tutor', 'Debes seleccionar un tutor para el alumno.')
-            cleaned_data['grupo'] = None
 
-        else:
+            nombre = cleaned_data.get('nombre')
+            apellido = cleaned_data.get('apellido')
+
+            if nombre and apellido:
+                cleaned_data['username'] = generar_username_unico(
+                    nombre,
+                    apellido,
+                    usuario_actual=self.usuario
+                )
+            else:
+                cleaned_data['username'] = self.usuario.username
+
             cleaned_data['grupo'] = None
-            cleaned_data['tutor'] = None
+            cleaned_data['email'] = self.usuario.email or ""
+            cleaned_data['contrasena'] = ""
+            cleaned_data['confirmar_contrasena'] = ""
+
+        if self.rol != 'Alumno' and contrasena and confirmar_contrasena:
+            if contrasena != confirmar_contrasena:
+                self.add_error(
+                    'confirmar_contrasena',
+                    'Las contraseñas no coinciden.'
+                )
 
         return cleaned_data

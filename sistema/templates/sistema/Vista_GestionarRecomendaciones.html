@@ -1,143 +1,170 @@
-{% extends 'sistema/base.html' %} {% block title %}Gestionar Platillos | BeeKids{% endblock %}
+{% extends 'sistema/base.html' %}
+
+{% block title %}Gestionar Platillos | BeeKids{% endblock %}
 
 {% block extra_css %}
-    <style>
-        /* Contenedor para centrar la tarjeta de la tabla */
-        .centrar-platillos {
-            display: flex;
-            justify-content: center;
-            padding-top: 20px;
-        }
+<style>
+    .centrar-platillos {
+        display: flex;
+        justify-content: center;
+        padding-top: 20px;
+    }
 
-        .contenedor-platillos {
-            width: 100%;
-            max-width: 1000px; /* Un poco más ancho porque es una tabla */
-            background-color: #ffffff;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra estándar */
-            box-sizing: border-box;
-        }
+    .contenedor-platillos {
+        width: 100%;
+        max-width: 1000px;
+        background-color: #ffffff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        box-sizing: border-box;
+    }
 
-        /* Barra superior para los botones de acción */
-        .acciones-superiores {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
+    .acciones-superiores {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
 
-        .titulo-platillos {
-            text-align: center;
-            color: #333;
-            margin-top: 0;
-            margin-bottom: 25px;
-            font-size: 28px;
-            font-weight: bold;
-        }
+    .titulo-platillos {
+        text-align: center;
+        color: #333;
+        margin-top: 0;
+        margin-bottom: 25px;
+        font-size: 28px;
+        font-weight: bold;
+    }
 
-        /* Estilos específicos para la tabla */
-        .tabla-platillos {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
+    .tabla-platillos {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 10px;
+    }
 
-        .tabla-platillos th, .tabla-platillos td {
-            border: 1px solid #e5e7eb;
-            padding: 12px 15px;
-            text-align: left;
-            vertical-align: top;
-        }
+    .tabla-platillos th,
+    .tabla-platillos td {
+        border: 1px solid #e5e7eb;
+        padding: 12px 15px;
+        text-align: left;
+        vertical-align: top;
+    }
 
-        .tabla-platillos th {
-            background-color: #f9fafb;
-            font-weight: 600;
-            color: #4b5563;
-        }
+    .tabla-platillos th {
+        background-color: #f9fafb;
+        font-weight: 600;
+        color: #4b5563;
+    }
 
-        .tabla-platillos tr:nth-child(even) {
-            background-color: #fbfbfc;
-        }
+    .tabla-platillos tr:nth-child(even) {
+        background-color: #fbfbfc;
+    }
 
-        /* Contenedor para que los botones de la tabla no se amontonen */
-        .acciones-fila {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
+    .acciones-fila {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
 
-        /* Alertas / Mensajes */
-        .mensajes-platillos {
-            margin-bottom: 20px;
-            padding: 12px;
-            background-color: #eafaf1;
-            color: #27ae60;
-            border: 1px solid #a3e4d7;
-            border-radius: 8px;
-            text-align: center;
-        }
-    </style>
+    .mensajes-platillos {
+        margin-bottom: 20px;
+        padding: 12px;
+        background-color: #eafaf1;
+        color: #27ae60;
+        border: 1px solid #a3e4d7;
+        border-radius: 8px;
+        text-align: center;
+    }
+</style>
 {% endblock %}
 
 {% block content %}
-    <div class="centrar-platillos">
-        <div class="contenedor-platillos">
-            
-            <div class="acciones-superiores">
-                <a href="{% url 'opcionesMenu' %}" class="btn"> Opciones Menú</a>
-                <a href="{% url 'crearRecomendacion' %}" class="btn primary">Agregar Platillo +</a>
-            </div>
+<div class="centrar-platillos">
+    <div class="contenedor-platillos">
 
-            <h1 class="titulo-platillos">Gestión de Platillos</h1>
+        <div class="acciones-superiores">
+            <a href="{% url 'opcionesMenu' %}" class="btn">
+                Opciones Menú
+            </a>
 
-            {% if messages %}
-                {% for message in messages %}
-                    <div class="mensajes-platillos">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
-
-            <div style="overflow-x: auto;"> <table class="tabla-platillos">
-                    <thead>
-                        <tr>
-                            <th>Nombre</th>
-                            <th>Descripción</th>
-                            <th>Consideraciones</th>
-                            <th>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for platillo in platillos %}
-                        <tr>
-                            <td>{{ platillo.nombre }}</td>
-                            <td>{{ platillo.descripcion }}</td>
-                            <td>{{ platillo.consideraciones }}</td>
-                            <td>
-                                <div class="acciones-fila">
-                                    <a href="{% url 'editarRecomendacion' platillo_id=platillo.id %}" class="btn" style="background-color: #3498db; color: white;">Editar</a>
-                                    
-                                    <form action="{% url 'eliminarRecomendacion' platillo_id=platillo.id %}" method="POST" style="margin: 0;">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn danger" onclick="return confirm('¿Estás seguro de que deseas eliminar este platillo?');">Eliminar</button>
-                                    </form>
-                                </div>
-                            </td>
-                        </tr>
-                        {% empty %}
-                        <tr>
-                            <td colspan="4" style="text-align: center; color: #6b7280; font-style: italic;">
-                                No hay platillos registrados todavía.
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-
+            <a href="{% url 'crearRecomendacion' %}" class="btn primary">
+                Agregar Platillo +
+            </a>
         </div>
+
+        <h1 class="titulo-platillos">Gestión de Platillos</h1>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="mensajes-platillos">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
+        <div style="overflow-x: auto;">
+            <table class="tabla-platillos">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Consideraciones</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for platillo in platillos %}
+                    <tr>
+                        <td>{{ platillo.nombre }}</td>
+                        <td>{{ platillo.descripcion }}</td>
+                        <td>{{ platillo.consideraciones }}</td>
+
+                        <td>
+                            <div class="acciones-fila">
+                                <a
+                                    href="{% url 'editarRecomendacion' platillo_id=platillo.id %}"
+                                    class="btn"
+                                    style="background-color: #3498db; color: white;"
+                                >
+                                    Editar
+                                </a>
+
+                                <form
+                                    action="{% url 'eliminarRecomendacion' platillo_id=platillo.id %}"
+                                    method="POST"
+                                    style="margin: 0;"
+                                >
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="btn danger"
+                                        onclick="return confirm('¿Estás seguro de que deseas eliminar este platillo?');"
+                                    >
+                                        Eliminar
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+
+                    {% empty %}
+                    <tr>
+                        <td
+                            colspan="4"
+                            style="text-align: center; color: #6b7280; font-style: italic;"
+                        >
+                            No hay platillos registrados todavía.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
     </div>
+</div>
 {% endblock %}

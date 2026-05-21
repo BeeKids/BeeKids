@@ -142,37 +142,27 @@ class CreadorDeAlumnos(CreadorDeUsuariosEscolares):
 
     def crearUsuarioEscolar(self, **kwargs) -> None:
         tutorId = kwargs.get('tutor')
+
         try:
             tutor = Tutor.objects.get(id=tutorId)
 
-            nombre = kwargs.get('nombre', '').strip().lower()
-            apellido = kwargs.get('apellido', '').strip().lower()
-
-            def limpiar(texto):
-                texto = unicodedata.normalize('NFKD', texto).encode('ascii', 'ignore').decode('ascii')
-                return re.sub(r'[^a-z0-9]', '', texto)
-
-            base = f"{limpiar(nombre.split()[0])}.{limpiar(apellido.split()[0])}"
-
-            username_generado = base
-            contador = 1
-
-            while Alumno.objects.filter(username=username_generado).exists():
-                username_generado = f"{base}{contador}"
-                contador += 1
-
             alumno = Alumno(
-                username=username_generado,
+                username=kwargs.get('username'),
                 email='',
                 first_name=kwargs.get('nombre'),
                 last_name=kwargs.get('apellido'),
                 tutorAlumno=tutor
             )
+
             alumno.set_unusable_password()
             alumno.save()
+
             return alumno
+
         except Tutor.DoesNotExist:
-            raise ValueError(f"No se encontró el tutor con ID {tutorId}")
+            raise ValueError(
+                f"No se encontró el tutor con ID {tutorId}"
+            )
         
 class CreadorDeNutricionistas(CreadorDeUsuariosEscolares):
     def crearUsuarioEscolar(self, **kwargs) -> None:

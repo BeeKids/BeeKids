@@ -18,12 +18,16 @@ class GestorHorarios():
 
     @classmethod
     def obtenerHorarioPorDefecto(cls) -> int:
-        """Obtiene el ID de un horario predeterminado."""
-        horarioPorDefecto, creado = HorarioEscolar.objects.get_or_create(
-            fecha=None, 
-            defaults={'horaEntrada': '06:00', 'horaSalida': '12:00'}
-        )
-        return horarioPorDefecto.id  
+        horarioPorDefecto = HorarioEscolar.objects.filter(fecha__isnull=True).first()
+
+        if not horarioPorDefecto:
+            horarioPorDefecto = HorarioEscolar.objects.create(
+                fecha=None,
+                horaEntrada='06:00',
+                horaSalida='12:00'
+            )
+
+        return horarioPorDefecto.id
 
     @staticmethod
     def crearHorarioEscolar(fecha: m.DateField, horaEntrada: m.TimeField, horaSalida: m.TimeField) -> HorarioEscolar:
@@ -41,8 +45,8 @@ class GestorHorarios():
             return False
 
 class Actividad(m.Model):
-    nombre = m.CharField(max_length=200, default="Actividad sin Nombre")
-    descripcion = m.CharField(max_length=500, default="Actividad sin descripción")
+    nombre = m.CharField(max_length=200)
+    descripcion = m.CharField(max_length=500)
     horaInicio = m.TimeField()
     horaFinal = m.TimeField()
     fecha = m.DateField(default=timezone.localdate)
@@ -51,7 +55,6 @@ class Actividad(m.Model):
 
 class GestorActividades():
 
-    # models_actividades.py
     def obtener_grupo():
         from .models import Grupo
         return Grupo

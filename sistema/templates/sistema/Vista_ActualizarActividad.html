@@ -1,157 +1,428 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Actualizar Actividad</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
-            margin: 0;
-            padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
 
+    <style>
+      :root {
+        --color-fondo: #f4f6f9;
+        --color-tarjeta: #ffffff;
+        --color-texto: #333333;
+        --color-texto-secundario: #666666;
+        --color-borde: #d7dbe0;
+
+        --color-primario: #f39c12;
+        --color-primario-hover: #d68910;
+        --color-enlace: #16a085;
+        --color-enlace-hover: #12816e;
+
+        --color-error: #c0392b;
+        --color-error-fondo: #fdecea;
+        --color-error-borde: #f5b7b1;
+
+        --color-exito: #27ae60;
+        --color-exito-fondo: #eafaf1;
+        --color-exito-borde: #a3e4d7;
+
+        --sombra: 0 6px 20px rgba(0, 0, 0, 0.12);
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: var(--color-fondo);
+        margin: 0;
+        padding: 30px 15px;
+        color: var(--color-texto);
+      }
+
+      .contenedor {
+        width: 100%;
+        max-width: 860px;
+        margin: 0 auto;
+        background-color: var(--color-tarjeta);
+        padding: 40px;
+        border-radius: 16px;
+        box-shadow: var(--sombra);
+      }
+
+      .encabezado {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      h1 {
+        font-size: 34px;
+        margin: 0;
+        font-weight: bold;
+        color: var(--color-texto);
+      }
+
+      .mensajes {
+        margin: 0 0 22px 0;
+        padding: 0;
+        list-style: none;
+      }
+
+      .mensajes li,
+      .mensajes .error,
+      .mensajes .exito {
+        padding: 12px 14px;
+        border-radius: 8px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        line-height: 1.5;
+        transition:
+          opacity 0.4s ease,
+          transform 0.4s ease;
+      }
+
+      .mensajes .error,
+      li.error {
+        background-color: var(--color-error-fondo);
+        color: var(--color-error);
+        border: 1px solid var(--color-error-borde);
+      }
+
+      .mensajes .exito,
+      li.exito {
+        background-color: var(--color-exito-fondo);
+        color: var(--color-exito);
+        border: 1px solid var(--color-exito-borde);
+      }
+
+      .mensaje-fade {
+        opacity: 0;
+        transform: translateY(-8px);
+      }
+
+      .error-general {
+        background-color: var(--color-error-fondo);
+        border: 1px solid var(--color-error-borde);
+        color: var(--color-error);
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 22px;
+      }
+
+      .seccion {
+        border: 1px solid #e4e8ed;
+        border-radius: 14px;
+        padding: 24px;
+        background-color: #ffffff;
+      }
+
+      .seccion-titulo {
+        font-size: 20px;
+        font-weight: 700;
+        margin: 0 0 10px 0;
+      }
+
+      .seccion-descripcion {
+        margin: 0 0 20px 0;
+        color: var(--color-texto-secundario);
+        font-size: 14px;
+        line-height: 1.5;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px 20px;
+      }
+
+      .campo {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+
+      .campo-completo {
+        grid-column: 1 / -1;
+      }
+
+      .campo label {
+        font-weight: 600;
+        font-size: 15px;
+        color: #444444;
+      }
+
+      input,
+      textarea,
+      select {
+        width: 100%;
+        padding: 14px;
+        font-size: 16px;
+        border: 1px solid var(--color-borde);
+        border-radius: 10px;
+        background-color: #ffffff;
+        color: var(--color-texto);
+        font-family: "Poppins", sans-serif;
+        transition:
+          border-color 0.3s ease,
+          box-shadow 0.3s ease,
+          background-color 0.3s ease;
+      }
+
+      textarea {
+        min-height: 110px;
+        resize: vertical;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        border-color: var(--color-primario);
+        outline: none;
+        box-shadow: 0 0 0 4px rgba(243, 156, 18, 0.15);
+      }
+
+      .error-texto {
+        color: var(--color-error);
+        font-size: 13px;
+        margin: 0;
+        line-height: 1.4;
+      }
+
+      .detalle-actividad {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 14px;
+      }
+
+      .detalle-item {
+        background-color: #f8fafc;
+        border: 1px solid var(--color-borde);
+        border-radius: 10px;
+        padding: 14px;
+      }
+
+      .detalle-label {
+        display: block;
+        font-size: 13px;
+        color: var(--color-texto-secundario);
+        margin-bottom: 6px;
+      }
+
+      .detalle-valor {
+        font-size: 15px;
+        font-weight: 700;
+        color: var(--color-texto);
+      }
+
+      .acciones {
+        display: flex;
+        gap: 12px;
+        margin-top: 16px;
+        justify-content: flex-end;
+      }
+
+      .boton-principal,
+      .boton-secundario-outline {
+        padding: 15px 24px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 50px;
+        border-radius: 10px;
+        font-size: 16px;
+        font-weight: 700;
+        text-decoration: none;
+        text-align: center;
+      }
+
+      .boton-principal {
+        border: none;
+        background-color: var(--color-primario);
+        color: #ffffff;
+        cursor: pointer;
+      }
+
+      .boton-principal:hover {
+        background-color: var(--color-primario-hover);
+      }
+
+      .boton-principal:disabled {
+        opacity: 0.75;
+        cursor: not-allowed;
+      }
+
+      .boton-secundario-outline {
+        border: 1px solid var(--color-borde);
+        background-color: #ffffff;
+        color: var(--color-texto);
+      }
+
+      .boton-secundario-outline:hover {
+        background-color: #f8fafc;
+      }
+
+      @media (max-width: 768px) {
         .contenedor {
-            background-color: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            max-width: 500px;
-            width: 100%;
+          padding: 24px 20px;
         }
 
         h1 {
-            text-align: center;
-            color: #3a7bd5;
+          font-size: 28px;
         }
 
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
+        .grid,
+        .detalle-actividad {
+          grid-template-columns: 1fr;
         }
 
-        label {
-            font-weight: bold;
+        .acciones {
+          flex-direction: column;
         }
-
-        input, textarea, button {
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 1rem;
-        }
-
-        button {
-            background-color: #3a7bd5;
-            color: white;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        button:hover {
-            background-color: #2f6aba;
-        }
-
-        .boton-regresar {
-            color: #16a085;
-        }
-
-        .boton-regresar:hover {
-            color: #12816e;
-        }
-
-        .mensajes {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-
-        .mensajes li {
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .mensajes .error {
-            background-color: #fdecea;
-            color: #c0392b;
-            border: 1px solid #f5b7b1;
-        }
-
-        .mensajes .exito {
-            background-color: #eafaf1;
-            color: #27ae60;
-            border: 1px solid #a3e4d7;
-        }
-
+      }
     </style>
-</head>
-<body>
+  </head>
+
+  <body>
     <div class="contenedor">
-        <h1>Actualizar Actividad</h1>
+      <div class="encabezado">
+        <h1>Actualizar actividad</h1>
+      </div>
 
-        <!-- Mostrar mensajes de éxito o error -->
-        {% if messages %}
-            <ul class="mensajes">
-                {% for message in messages %}
-                    <li class="mensaje {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}exito{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}error{% endif %}">
-                        {{ message }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+      {% if messages %}
+      <ul class="mensajes" id="lista-mensajes">
+        {% for message in messages %}
+        <li
+          class="{% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}exito{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}error{% endif %}"
+        >
+          {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}
+          <strong>Éxito:</strong>
+          {% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}
+          <strong>Error:</strong>
+          {% else %}
+          <strong>Aviso:</strong>
+          {% endif %} {{ message }}
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %} {% if form.non_field_errors %}
+      <div class="error-general">
+        {% for error in form.non_field_errors %}
+        <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+      {% endif %}
 
-        <div class="mensajes">
-            <!-- Errores globales -->
-            {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                    <li class="error">{{ error }}</li>
-                {% endfor %}
-            {% endif %}
+      <form method="POST" id="form-actualizar-actividad" novalidate>
+        {% csrf_token %}
 
-            
-            <!-- Errores específicos de cada campo -->
+        <section class="seccion">
+          <h2 class="seccion-titulo">Información de la actividad</h2>
+          <p class="seccion-descripcion">
+            Actualiza los datos principales de la actividad registrada.
+          </p>
+
+          <div class="grid">
             {% for field in form %}
-                {% for error in field.errors %}
-                    <li class="error">{{ error }}</li>
-                {% endfor %}
+            <div class="campo campo-completo">
+              {{ field.label_tag }} {{ field }} {% for error in field.errors %}
+              <p class="error-texto" role="alert">{{ error }}</p>
+              {% endfor %}
+            </div>
             {% endfor %}
+          </div>
+        </section>
+
+        <section class="seccion">
+          <h2 class="seccion-titulo">Datos asociados</h2>
+          <p class="seccion-descripcion">
+            Estos datos pertenecen a la actividad seleccionada y se muestran
+            únicamente como referencia.
+          </p>
+
+          <div class="detalle-actividad">
+            <div class="detalle-item">
+              <span class="detalle-label">Fecha</span>
+              <span class="detalle-valor">{{ actividad.fecha }}</span>
+            </div>
+
+            <div class="detalle-item">
+              <span class="detalle-label">Horario</span>
+              <span class="detalle-valor">{{ actividad.horario }}</span>
+            </div>
+
+            <div class="detalle-item">
+              <span class="detalle-label">Grupo</span>
+              <span class="detalle-valor">{{ actividad.grupo }}</span>
+            </div>
+          </div>
+        </section>
+
+        <div class="acciones">
+          <a
+            class="boton-secundario-outline"
+            href="{% url 'listaActividades' %}"
+          >
+            Cancelar
+          </a>
+
+          <button type="submit" class="boton-principal" id="submitBtn" disabled>
+            Guardar cambios
+          </button>
         </div>
-
-        <form method="POST">
-            {% csrf_token %}
-            
-            <!-- Mostrar los campos sin los errores automáticos -->
-            {% for field in form %}
-                <div>
-                    {{ field.label_tag }}
-                    {{ field }}
-                </div>
-            {% endfor %}
-
-            <p><strong>Fecha:</strong> {{ actividad.fecha }}</p>
-            <p><strong>Horario:</strong> {{ actividad.horario }}</p>
-            <p><strong>{{actividad.grupo}}</strong></p>
-            <button type="submit">Actualizar</button>
-
-            <a href="{% url 'listaActividades' %}" class="boton-regresar">Regresar a la lista
-            </a>
-        </form>
+      </form>
     </div>
 
     {% if redirect %}
     <script>
-        // Mostrar el mensaje por 1 segundo antes de redirigir
-        setTimeout(function() {
-            window.location.href = "{% url 'listaActividades' %}";
-        }, 1000); 
+      setTimeout(function () {
+        window.location.href = "{% url 'listaActividades' %}";
+      }, 1000);
     </script>
     {% endif %}
-</body>
+
+    <script>
+      const form = document.getElementById("form-actualizar-actividad");
+      const submitBtn = document.getElementById("submitBtn");
+
+      if (form && submitBtn) {
+        const campos = form.querySelectorAll("input, textarea, select");
+
+        const valoresIniciales = {};
+
+        campos.forEach((campo) => {
+          valoresIniciales[campo.name] = campo.value;
+
+          campo.addEventListener("input", verificarCambios);
+          campo.addEventListener("change", verificarCambios);
+        });
+
+        function verificarCambios() {
+          let huboCambios = false;
+
+          campos.forEach((campo) => {
+            if (campo.value !== valoresIniciales[campo.name]) {
+              huboCambios = true;
+            }
+          });
+
+          submitBtn.disabled = !huboCambios;
+        }
+      }
+
+      setTimeout(() => {
+        document.querySelectorAll(".mensajes li").forEach((msg) => {
+          msg.classList.add("mensaje-fade");
+
+          setTimeout(() => msg.remove(), 400);
+        });
+      }, 4000);
+    </script>
+  </body>
 </html>

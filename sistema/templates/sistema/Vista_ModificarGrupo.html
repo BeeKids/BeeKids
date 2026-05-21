@@ -1,179 +1,369 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>Modificar Grupo</title>
+
     <style>
-        body {
-            font-family: 'Poppins', sans-serif; 
-            background-color: #f4f6f9;
-            margin: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-        }
+      * {
+        box-sizing: border-box;
+      }
 
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f4f6f9;
+        margin: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        padding: 30px 15px;
+      }
+
+      .contenedor {
+        width: 90%;
+        max-width: 760px;
+        background-color: #ffffff;
+        padding: 50px;
+        border-radius: 12px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      }
+
+      h1 {
+        text-align: center;
+        font-size: 32px;
+        color: #333333;
+        margin: 0 0 30px 0;
+        font-weight: bold;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+        gap: 24px;
+      }
+
+      .campo {
+        display: flex;
+        flex-direction: column;
+      }
+
+      label {
+        font-weight: 500;
+        text-align: left;
+        margin-bottom: 6px;
+        font-size: 16px;
+        color: #555555;
+      }
+
+      input[type="text"] {
+        width: 100%;
+        padding: 15px;
+        font-size: 16px;
+        border: 1px solid #dddddd;
+        border-radius: 8px;
+      }
+
+      input[type="text"]:focus {
+        border-color: #007bff;
+        outline: none;
+        box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+      }
+
+      .descripcion {
+        color: #666666;
+        font-size: 14px;
+        line-height: 1.5;
+        margin: 0 0 12px 0;
+      }
+
+      .lista-alumnos {
+        border: 1px solid #dddddd;
+        border-radius: 10px;
+        padding: 16px;
+        max-height: 260px;
+        overflow-y: auto;
+        background-color: #ffffff;
+      }
+
+      .lista-alumnos ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px 18px;
+      }
+
+      .lista-alumnos li {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 15px;
+        color: #333333;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        padding: 8px 10px;
+        transition: all 0.2s ease;
+      }
+
+      .lista-alumnos li:has(input[type="checkbox"]:checked) {
+        background-color: #eafaf1;
+        border-color: #a3e4d7;
+        color: #1e8449;
+        font-weight: 600;
+      }
+
+      .lista-alumnos input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+      }
+
+      .etiqueta-asignado {
+        margin-left: auto;
+        background-color: #27ae60;
+        color: #ffffff;
+        font-size: 11px;
+        font-weight: bold;
+        padding: 4px 8px;
+        border-radius: 20px;
+        white-space: nowrap;
+      }
+
+      .mensaje-exito {
+        background-color: #eafaf1;
+        color: #27ae60;
+        border: 1px solid #a3e4d7;
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 14px;
+        text-align: left;
+        margin-bottom: 12px;
+      }
+
+      .error-general {
+        background-color: #fdecea;
+        color: #c0392b;
+        border: 1px solid #f5b7b1;
+        border-radius: 8px;
+        padding: 12px;
+        font-size: 14px;
+        text-align: left;
+        margin-bottom: 12px;
+      }
+
+      .mensaje-exito p,
+      .error-general p {
+        margin: 0;
+      }
+
+      .mensaje-exito,
+      .error-general {
+        animation: desaparecer 0.5s ease forwards;
+        animation-delay: 4s;
+      }
+
+      @keyframes desaparecer {
+        to {
+          opacity: 0;
+          transform: translateY(-10px);
+          visibility: hidden;
+        }
+      }
+
+      .error-texto {
+        color: #c0392b;
+        font-size: 13px;
+        margin: 6px 0 0 0;
+        text-align: left;
+      }
+
+      .sin-alumnos {
+        background-color: #f8fafc;
+        border: 1px solid #dddddd;
+        border-radius: 8px;
+        padding: 14px;
+        color: #666666;
+        font-size: 14px;
+        text-align: left;
+      }
+
+      .acciones {
+        display: flex;
+        justify-content: flex-end;
+        gap: 12px;
+        margin-top: 8px;
+      }
+
+      .boton-principal,
+      .boton-cancelar {
+        padding: 15px 24px;
+        border-radius: 8px;
+        font-size: 18px;
+        font-weight: bold;
+        text-decoration: none;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .boton-principal {
+        background-color: #3498db;
+        color: #ffffff;
+        border: none;
+      }
+
+      .boton-principal:hover {
+        background-color: #2980b9;
+      }
+
+      .boton-cancelar {
+        background-color: #ffffff;
+        color: #333333;
+        border: 1px solid #dddddd;
+      }
+
+      .boton-cancelar:hover {
+        background-color: #f8fafc;
+      }
+
+      @media (max-width: 768px) {
         .contenedor {
-            width: 90%;
-            max-width: 750px;
-            background-color: #ffffff;
-            padding: 50px;
-            border-radius: 12px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-            text-align: center;
+          padding: 30px 20px;
         }
 
-        h1 {
-            font-size: 32px;
-            color: #333;
-            margin-bottom: 30px;
-            font-weight: bold;
+        .lista-alumnos ul {
+          grid-template-columns: 1fr;
         }
 
-        .mensajes {
-            margin-bottom: 20px;
-            text-align: left;
+        .acciones {
+          flex-direction: column;
         }
-
-        .mensajes li {
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 10px;
-            font-size: 14px;
-        }
-
-        .mensajes .error {
-            background-color: #fdecea;
-            color: #c0392b;
-            border: 1px solid #f5b7b1;
-        }
-
-        .mensajes .exito {
-            background-color: #eafaf1;
-            color: #27ae60;
-            border: 1px solid #a3e4d7;
-        }
-
-        form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        form label {
-            font-weight: 500;
-            text-align: left;
-            margin-bottom: 5px;
-            font-size: 16px;
-            color: #555;
-        }
-
-        form input, form select {
-            padding: 15px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-        }
-
-        form input:focus, form select:focus {
-            border-color: #007BFF;
-            outline: none;
-            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
-        }
-
-        form button {
-            padding: 15px;
-            background-color: #3498db;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s ease-in-out, transform 0.2s ease-in-out;
-        }
-
-        form button:hover {
-            background-color: #2980b9;
-        }
-
-        .enlace {
-            background-color: #16a085;
-        }
-
-        .enlace a{
-            color: #ffffff;
-            text-decoration: none;
-        }
-
-        .enlace:hover {
-            background-color: #12816e;
-        }
-
+      }
     </style>
-</head>
-<body>
+  </head>
+
+  <body>
     <div class="contenedor">
-        <h1>Actualizar Grupo</h1>
+      <h1>Modificar grupo</h1>
 
-        <!-- Mostrar mensajes de éxito o error -->
-        {% if messages %}
-            <ul class="mensajes">
-                {% for message in messages %}
-                    <li class="mensaje {% if message.level == DEFAULT_MESSAGE_LEVELS.SUCCESS %}exito{% elif message.level == DEFAULT_MESSAGE_LEVELS.ERROR %}error{% endif %}">
-                        {{ message }}
-                    </li>
-                {% endfor %}
-            </ul>
-        {% endif %}
+      <form method="POST">
+        {% csrf_token %}
 
-        <div class="mensajes">
-            <!-- Errores globales -->
-            {% if form.non_field_errors %}
-                {% for error in form.non_field_errors %}
-                    <li class="error">{{ error }}</li>
-                {% endfor %}
-            {% endif %}
-
-            
-            <!-- Errores específicos de cada campo -->
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <li class="error">{{ error }}</li>
-                {% endfor %}
-            {% endfor %}
+        <div id="contenedor-mensajes">
+          {% if messages %} {% for message in messages %}
+          <div
+            class="{% if message.tags == 'success' %}mensaje-exito{% else %}error-general{% endif %}"
+          >
+            <p>{{ message }}</p>
+          </div>
+          {% endfor %} {% endif %}
         </div>
 
+        {% if form.non_field_errors %}
+        <div class="error-general">
+          {% for error in form.non_field_errors %}
+          <p>{{ error }}</p>
+          {% endfor %}
+        </div>
+        {% endif %}
 
-        <form method="POST">
-            {% csrf_token %}
-            
-            <!-- Mostrar los campos sin los errores automáticos -->
-            {% for field in form %}
-                <div>
-                    {{ field.label_tag }}
-                    {{ field }}
-                </div>
-            {% endfor %}
+        <div class="campo">
+          <label for="{{ form.nombre.id_for_label }}"> Nombre del grupo </label>
 
-            <button type="submit">Actualizar</button>
+          {{ form.nombre }} {% for error in form.nombre.errors %}
+          <p class="error-texto">{{ error }}</p>
+          {% endfor %}
+        </div>
 
-            <a href="{% url 'listaGrupos' %}" class="boton-regresar">Regresar a la lista
-            </a>
-        </form>
+        <div class="campo">
+          <label> {{ form.alumnos.label }} </label>
+
+          <p class="descripcion">
+            Los alumnos marcados ya pertenecen actualmente a este grupo. Puedes
+            desmarcarlos para quitarlos o marcar nuevos alumnos para agregarlos.
+          </p>
+
+          {% if form.alumnos.field.queryset %}
+          <div class="lista-alumnos">{{ form.alumnos }}</div>
+          {% else %}
+          <div class="sin-alumnos">
+            No hay alumnos disponibles para asignar a este grupo.
+          </div>
+          {% endif %} {% for error in form.alumnos.errors %}
+          <p class="error-texto">{{ error }}</p>
+          {% endfor %}
+        </div>
+
+        <div class="acciones">
+          <a class="boton-cancelar" href="{% url 'listaGrupos' %}">
+            Cancelar
+          </a>
+
+          <button type="submit" class="boton-principal">Guardar cambios</button>
+        </div>
+      </form>
     </div>
+
+    <script>
+      function actualizarEtiquetasAlumnos() {
+        const alumnos = document.querySelectorAll(".lista-alumnos li");
+
+        alumnos.forEach(function (alumno) {
+          const checkbox = alumno.querySelector('input[type="checkbox"]');
+
+          const etiquetaExistente = alumno.querySelector(".etiqueta-asignado");
+
+          if (checkbox && checkbox.checked && !etiquetaExistente) {
+            const etiqueta = document.createElement("span");
+
+            etiqueta.className = "etiqueta-asignado";
+
+            etiqueta.textContent = "Ya asignado";
+
+            alumno.appendChild(etiqueta);
+          }
+
+          if (checkbox && !checkbox.checked && etiquetaExistente) {
+            etiquetaExistente.remove();
+          }
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", function () {
+        actualizarEtiquetasAlumnos();
+
+        const checkboxes = document.querySelectorAll(
+          '.lista-alumnos input[type="checkbox"]'
+        );
+
+        checkboxes.forEach(function (checkbox) {
+          checkbox.addEventListener("change", function () {
+            actualizarEtiquetasAlumnos();
+          });
+        });
+      });
+
+      setTimeout(function () {
+        const contenedorMensajes = document.getElementById(
+          "contenedor-mensajes"
+        );
+
+        if (contenedorMensajes) {
+          contenedorMensajes.remove();
+        }
+      }, 4500);
+    </script>
 
     {% if redirect %}
     <script>
-        // Mostrar el mensaje por 1 segundo antes de redirigir
-        setTimeout(function() {
-            window.location.href = "{% url 'listaGrupos' %}";
-        }, 1000); 
+      setTimeout(function () {
+        window.location.href = "{% url 'listaGrupos' %}";
+      }, 1000);
     </script>
     {% endif %}
-
-</body>
+  </body>
 </html>

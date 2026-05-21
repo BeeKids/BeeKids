@@ -1,110 +1,259 @@
 {% extends 'sistema/base.html' %}
 
-{% block title %}Seleccionar Menú Semanal | BeeKids{% endblock %}
+{% block title %}Seleccionar menú semanal | BeeKids{% endblock %}
 
 {% block extra_css %}
-    <style>
-        /* Contenedor especial para centrar SOLO esta tarjeta */
-        .centrar-seleccion {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding-top: 40px; /* Un poco de espacio desde el Navbar */
-        }
+<style>
+  :root {
+    --color-fondo: #f4f6f9;
+    --color-tarjeta: #ffffff;
+    --color-texto: #333333;
+    --color-texto-secundario: #666666;
+    --color-borde: #d7dbe0;
+    --color-primario: #3498db;
+    --color-primario-hover: #2980b9;
+    --color-visualizar: #4b5563;
+    --color-visualizar-hover: #374151;
+    --color-gestionar: #16a085;
+    --color-gestionar-hover: #12816e;
+    --color-enlace: #16a085;
+    --color-enlace-hover: #12816e;
+    --sombra: 0 6px 20px rgba(0, 0, 0, 0.12);
+  }
 
-        .container-menu {
-            background: #ffffff;
-            border-radius: 10px;
-            padding: 40px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra estándar */
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-        }
+  * {
+    box-sizing: border-box;
+  }
 
-        /* Cambiamos h1 por una clase específica */
-        .titulo-seleccion {
-            font-size: 2.5rem;
-            margin-top: 0;
-            margin-bottom: 25px;
-            color: #333;
-            font-weight: 600;
-        }
+  body {
+    font-family: "Poppins", sans-serif;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+  }
 
-        .form-seleccion label {
-            font-size: 1.2rem;
-            color: #555;
-            margin-bottom: 10px;
-            display: block;
-        }
+  .contenedor {
+    width: 100%;
+    max-width: 860px;
+    margin: 30px auto;
+    background-color: var(--color-tarjeta);
+    padding: 40px;
+    border-radius: 16px;
+    box-shadow: var(--sombra);
+  }
 
-        .form-seleccion select {
-            width: 100%;
-            padding: 12px;
-            font-size: 1.1rem;
-            margin-bottom: 25px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-            background-color: #f8f8f8;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
+  .encabezado {
+    text-align: center;
+    margin-bottom: 30px;
+  }
 
-        .form-seleccion select:focus {
-            border-color: #007BFF;
-            background-color: #fff;
-        }
+  h1 {
+    font-size: 34px;
+    margin: 0 0 10px 0;
+    font-weight: bold;
+  }
 
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            gap: 15px; /* Espacio entre los botones */
-        }
+  .descripcion {
+    margin: 0;
+    color: var(--color-texto-secundario);
+    font-size: 15px;
+    line-height: 1.5;
+  }
 
-        /* Usamos las clases globales .btn y modificamos los colores */
-        .btn-ver {
-            flex: 1; /* Para que ocupen la mitad cada uno */
-            background-color: #28a745;
-            color: white;
-            padding: 12px;
-            font-size: 1rem;
-        }
-        .btn-ver:hover { background-color: #218838; }
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
 
-        .btn-gestionar {
-            flex: 1;
-            background-color: #ffc107;
-            color: #333; /* Texto oscuro para el amarillo */
-            padding: 12px;
-            font-size: 1rem;
-        }
-        .btn-gestionar:hover { background-color: #e0a800; }
+  .seccion {
+    border: 1px solid #e4e8ed;
+    border-radius: 14px;
+    padding: 24px;
+    background-color: #ffffff;
+  }
 
-    </style>
+  .campo {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  label {
+    font-weight: 600;
+    font-size: 15px;
+    color: #444444;
+  }
+
+  select {
+    width: 100%;
+    padding: 14px;
+    font-size: 16px;
+    border: 1px solid var(--color-borde);
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: var(--color-texto);
+    font-family: "Poppins", sans-serif;
+    transition:
+      border-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  select:focus {
+    border-color: var(--color-primario);
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(52, 152, 219, 0.15);
+  }
+
+  .acciones {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .boton-visualizar,
+  .boton-gestionar,
+  .boton-secundario-outline {
+    padding: 15px 24px;
+    min-height: 50px;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 700;
+    text-decoration: none;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    cursor: pointer;
+    font-family: "Poppins", sans-serif;
+    border: none;
+    transition:
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  .boton-visualizar {
+    background-color: var(--color-visualizar);
+    color: #ffffff;
+  }
+
+  .boton-visualizar:hover {
+    background-color: var(--color-visualizar-hover);
+    box-shadow: 0 4px 12px rgba(75, 85, 99, 0.25);
+  }
+
+  .boton-gestionar {
+    background-color: var(--color-gestionar);
+    color: #ffffff;
+  }
+
+  .boton-gestionar:hover {
+    background-color: var(--color-gestionar-hover);
+    box-shadow: 0 4px 12px rgba(22, 160, 133, 0.25);
+  }
+
+  .boton-secundario-outline {
+    background-color: #ffffff;
+    color: var(--color-texto);
+    border: 1px solid var(--color-borde);
+  }
+
+  .boton-secundario-outline:hover {
+    background-color: #f8fafc;
+  }
+
+  .acciones-secundarias {
+    margin-top: 12px;
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .link-secundario {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--color-enlace);
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+  }
+
+  .link-secundario:hover {
+    color: var(--color-enlace-hover);
+    text-decoration: underline;
+  }
+
+  .link-secundario .icono {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  @media (max-width: 768px) {
+    .contenedor {
+      padding: 24px 20px;
+    }
+
+    h1 {
+      font-size: 28px;
+    }
+
+    .acciones {
+      flex-direction: column;
+    }
+
+    .boton-visualizar,
+    .boton-gestionar,
+    .boton-secundario-outline {
+      width: 100%;
+    }
+
+    .acciones-secundarias {
+      justify-content: center;
+    }
+  }
+</style>
 {% endblock %}
 
 {% block content %}
+<div class="contenedor">
+  <div class="encabezado">
+    <h1>Seleccionar menú semanal</h1>
 
-    <div class="centrar-seleccion">
-        <div class="container-menu">
-            <h1 class="titulo-seleccion">Selecciona un Menú</h1>
-            
-            <form class="form-seleccion" method="GET" action="{% url 'seleccionarMenuSemanal' %}">
-                <label for="menu_id">Menú a Seleccionar:</label>
-                <select name="menu_id" id="menu_id">
-                    <option value="">Elige un menú</option>
-                    {% for menu in menus %}
-                        <option value="{{ menu.id }}">{{ menu.nombre }}</option>
-                    {% endfor %}
-                </select>
+    <p class="descripcion">
+      Elige un menú para consultarlo o administrar sus platillos.
+    </p>
+  </div>
 
-                <div class="button-container">
-                    <button type="submit" name="ver" value="true" class="btn btn-ver">Ver Menú</button>
-                    <button type="submit" name="gestionar" value="true" class="btn btn-gestionar">Gestionar Menú</button>
-                </div>
-            </form>
-        </div>
+  <form method="GET" action="{% url 'seleccionarMenuSemanal' %}">
+    <section class="seccion">
+      <div class="campo">
+        <label for="menu_id">Menú semanal</label>
+
+        <select name="menu_id" id="menu_id" required>
+          <option value="">Selecciona un menú</option>
+
+          {% for menu in menus %}
+          <option value="{{ menu.id }}">{{ menu.nombre }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </section>
+
+    <div class="acciones">
+      <button type="submit" name="ver" value="true" class="boton-visualizar">
+        Ver menú
+      </button>
+
+      <button
+        type="submit"
+        name="gestionar"
+        value="true"
+        class="boton-gestionar"
+      >
+        Gestionar menú
+      </button>
     </div>
-
+  </form>
+</div>
 {% endblock %}
